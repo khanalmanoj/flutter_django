@@ -13,6 +13,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   bool scanning = true;
+  bool isscanned = false;
   Map<String, dynamic> jsonfinal = {};
 
   @override
@@ -21,19 +22,22 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       appBar: AppBar(
         title: const Text('QR Code Scanner'),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: _buildQrView(context),
-          ),
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: Text('Scanning: $scanning'),
+      body: Container(
+        margin: const EdgeInsets.all(20),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 5,
+              child: _buildQrView(context),
             ),
-          ),
-        ],
+            const Expanded(
+              flex: 2,
+              child: Center(
+                child: Text('Scanning QR Code',style:TextStyle(color: Colors.green,fontSize: 20,fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -55,10 +59,13 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        scanning = false;
-        _handleResult(scanData);
-      });
+      if (!isscanned) {
+        setState(() {
+          isscanned = true;
+          scanning = false;
+          _handleResult(scanData);
+        });
+      }
     });
   }
 
