@@ -38,6 +38,10 @@ dependencies:
   http: ^0.13.3
   qr_code_scanner: ^1.0.0
   qr_flutter: ^4.1.0
+  shared_preferences:
+  path_provider:
+  provider:
+  badges:
 
 dev_dependencies:
   flutter_test:

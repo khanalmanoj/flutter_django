@@ -4,5 +4,6 @@ from django.db import models
 class Food(models.Model):
     food_name = models.CharField(max_length=50)
     desc = models.TextField(max_length=500)
+    price = models.IntegerField(default=0)
     time = models.CharField(max_length=50)
     image = models.ImageField(upload_to='images/', null=True, blank=True)

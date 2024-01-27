@@ -25,7 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> fetchData() async {
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.1.9:8000/api/food/"),
+        Uri.parse("http://127.0.0.1:8000/api/food/"),
       );
 
       if (response.statusCode == 200) {
