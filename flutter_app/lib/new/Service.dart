@@ -7,7 +7,7 @@ class Service{
 
   static var client = http.Client();
 
-  static Future<List<FoodModel>?> fetchAllProducts() async{
+  static Future<List<FoodModel>?> fetchAllFoods() async{
 
 
     var response = await client.get(Uri.parse("http://127.0.0.1:8000/api/food/"));

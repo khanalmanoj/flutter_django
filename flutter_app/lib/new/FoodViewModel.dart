@@ -3,7 +3,7 @@ import 'package:flutter_app/new/FoodModel.dart';
 import 'package:flutter_app/new/Service.dart';
 
 class FoodViewModel extends ChangeNotifier {
-  var productLists = <FoodModel>[];
+  var foodLists = <FoodModel>[];
   var cartLists = <FoodModel>[];
   var isLoading = true;
 
@@ -20,9 +20,9 @@ class FoodViewModel extends ChangeNotifier {
   }
 
   Future<void> getAllProducts() async {
-    var product = await Service.fetchAllProducts();
-    if (product != null) {
-      productLists = product;
+    var food = await Service.fetchAllFoods();
+    if (food != null) {
+      foodLists = food;
       setLoading(false);
     }
   }

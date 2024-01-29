@@ -4,12 +4,11 @@ import 'package:flutter_app/new/FoodViewModel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
   @override
-  _HomePageState createState() => _HomePageState();
+  foodLists createState() => foodLists();
 }
 
-class _HomePageState extends State<HomePage> {
+class foodLists extends State<HomePage> {
   var foodViewModel;
 
   @override
@@ -31,7 +30,7 @@ class _HomePageState extends State<HomePage> {
               ),
             )
           : ListView.builder(
-              itemCount: data.productLists.length,
+              itemCount: data.foodLists.length,
               itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.all(8.0),
@@ -43,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: NetworkImage(
-                                    data.productLists[index].image!),
+                                    data.foodLists[index].image!),
                                 fit: BoxFit.cover)),
                       ),
                       Container(
@@ -51,23 +50,23 @@ class _HomePageState extends State<HomePage> {
                         children: <Widget>[
                           Expanded(
                               child: Text(
-                            data.productLists[index].title!,
+                            data.foodLists[index].title!,
                             style: const TextStyle(fontSize: 20),
                           )),
                         ],
                       )),
                       Text(
-                        "Rs. ${data.productLists[index].price!}",
+                        "Rs. ${data.foodLists[index].price!}",
                         style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            data.cartLists.contains(data.productLists[index])
+                            data.cartLists.contains(data.foodLists[index])
                                 ? foodViewModel
-                                    .incrementQuantity(data.productLists[index])
+                                    .incrementQuantity(data.foodLists[index])
                                 : foodViewModel
-                                    .addCart(data.productLists[index]);
+                                    .addCart(data.foodLists[index]);
                           },
                           child: const Text("Add to cart"))
                     ],
