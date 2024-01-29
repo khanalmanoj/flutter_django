@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/new/CartPage.dart';
 import 'package:flutter_app/new/FoodViewModel.dart';
 import 'package:flutter_app/new/MyHomePage.dart';
-
 import 'package:provider/provider.dart';
 
 void main() {
