@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/new/CartPage.dart';
+import 'package:flutter_app/new/OrderPage.dart';
 import 'package:flutter_app/new/FoodViewModel.dart';
 import 'package:flutter_app/new/MyHomePage.dart';
+import 'package:flutter_app/new/login.dart';
+import 'package:flutter_app/new/qrpage.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -27,13 +29,13 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
           home: Scaffold(
         appBar: AppBar(
-          title: const Text('JSON Retrieval Example'),
+          title: const Text('Qrunch'),
         ),
         body: [
           const HomePage(),
-          const CartPage(),
-          const Text('History Page'),
-          const Text('Profile Page'),
+          const OrderPage(),
+          const QrPage(),
+          const LoginPage(),
         ].elementAt(_currentIndex),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {

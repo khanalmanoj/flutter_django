@@ -20,4 +20,11 @@ class FoodModel {
       image: json['image'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'food': title,
+      'quantity': quantity,
+    };
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/new/FoodModel.dart';
 import 'package:flutter_app/new/Service.dart';
@@ -52,5 +54,47 @@ class FoodViewModel extends ChangeNotifier {
 
   clearCart() {
     cartLists.clear();
+  }
+
+  String cartListtoJson() {
+  List<String> jsonDataList = [];
+
+  for (var item in cartLists) {
+    Map<String, dynamic> jsonData = item.toJson();
+    String jsonDataString = json.encode(jsonData);
+    jsonDataList.add(jsonDataString);
+  }
+
+  print(jsonDataList.toString());
+  return jsonDataList.toString();
+}
+
+  Map<String,dynamic> carttoJson() {
+
+    Map<String, dynamic> jsonData = {};
+
+    for (var item in cartLists) {
+      jsonData['food'] = item.id;
+      jsonData['items'] = cartListtoJson();
+      jsonData['quantity'] = item.quantity;
+    }
+    return jsonData;
+  }
+
+  createOrder() async {
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/orders/create/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(carttoJson()),
+    );
+
+    if (response.statusCode == 201) {
+      print('Order created successfully');
+    } else {
+      print('Failed to create order: ${response.statusCode}');
+      print(response.body);
+    }
   }
 }
