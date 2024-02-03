@@ -39,7 +39,33 @@ class _OrderPageState extends State<OrderPage> {
                 Consumer<FoodViewModel>(builder: ((context, data, child) {
               return FloatingActionButton(
                   onPressed: () {
+                    data.createOrderItem();
                     data.createOrder();
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Center(child: Text('Your QR Code')),
+                          content: SizedBox(
+                            height: 400,
+                            width: 400,
+                            child: QrImageView(
+                              data: data.cartListtoJson(),
+                              version: QrVersions.auto,
+                              size: 200.0,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   child: const Icon(Icons.qr_code));
             })),
@@ -113,14 +139,7 @@ class _OrderPageState extends State<OrderPage> {
                             );
                           });
                     }),
-                  ),
-                  Consumer<FoodViewModel>(builder: (context, data, child) {
-                    return QrImageView(
-                      data: data.cartLists.toString(),
-                      version: QrVersions.auto,
-                      size: 200.0,
-                    );
-                  })
+                  )
                 ],
               ),
             )));

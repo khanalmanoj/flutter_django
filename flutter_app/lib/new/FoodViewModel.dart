@@ -57,28 +57,58 @@ class FoodViewModel extends ChangeNotifier {
   }
 
   String cartListtoJson() {
-  List<String> jsonDataList = [];
+    List<String> jsonDataList = [];
 
-  for (var item in cartLists) {
-    Map<String, dynamic> jsonData = item.toJson();
-    String jsonDataString = json.encode(jsonData);
-    jsonDataList.add(jsonDataString);
+    for (var item in cartLists) {
+      Map<String, dynamic> jsonData = item.toJson();
+      String jsonDataString = json.encode(jsonData);
+      jsonDataList.add(jsonDataString);
+    }
+
+    print(jsonDataList.toString());
+    return jsonDataList.toString();
   }
 
-  print(jsonDataList.toString());
-  return jsonDataList.toString();
-}
+  // List<Map<String, dynamic>> carttooJson() {
+  //   List<Map<String, dynamic>> orderItems = [];
 
-  Map<String,dynamic> carttoJson() {
+  //   for (var item in cartLists) {
+  //     Map<String, dynamic> itemData = {
+  //       'food_name': item.id,
+  //       'desc': item.desc,
+  //       'time': item.time,
+  //     };
+  //     orderItems.add(itemData);
+  //   }
+  //   return orderItems;
+  // }
 
+  Map<String, dynamic> carttoJson() {
     Map<String, dynamic> jsonData = {};
 
     for (var item in cartLists) {
       jsonData['food'] = item.id;
-      jsonData['items'] = cartListtoJson();
       jsonData['quantity'] = item.quantity;
     }
+    print(jsonData.toString());
     return jsonData;
+  }
+
+  createOrderItem() async {
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/orders/create/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(carttoJson()),
+    );
+
+    if (response.statusCode == 201) {
+      print('Order created successfully');
+    } else {
+      print('Failed to create order: ${response.statusCode}');
+      print(response.body);
+    }
   }
 
   createOrder() async {
@@ -87,7 +117,9 @@ class FoodViewModel extends ChangeNotifier {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(carttoJson()),
+      body: jsonEncode({
+        'user': 1,
+      }),
     );
 
     if (response.statusCode == 201) {
