@@ -1,12 +1,11 @@
 from django.contrib import admin
+from . import models
 from .models import User
 from .models import Food
 from .models import OrderItem
 from .models import Order
 # Register your models here.
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['user_id','user_name','user_type']
+admin.site.register(models.User)
 
 @admin.register(Food)
 class FoodAdmin(admin.ModelAdmin):
@@ -18,4 +17,4 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user','order_id','date_time']
+    list_display = ['order_id','date_time']

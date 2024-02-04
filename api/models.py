@@ -1,14 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    nickname = models.CharField(max_length=50, default='user')
 
 # Create your models here.
-class User(models.Model):
-    USER_TYPES = [
-        ('Customer', 'Customer'),
-        ('Admin', 'Admin'),
-    ]
-    user_id = models.AutoField(primary_key=True)
-    user_name = models.CharField(max_length=255)
-    user_type = models.CharField(max_length=20, choices=USER_TYPES)
+# class User(models.Model):
+#     USER_TYPES = [
+#         ('Customer', 'Customer'),
+#         ('Admin', 'Admin'),
+#     ]
+#     user_id = models.AutoField(primary_key=True)
+#     user_name = models.CharField(max_length=255)
+#     user_type = models.CharField(max_length=20, choices=USER_TYPES)
 
 class Food(models.Model):
     id = models.AutoField(primary_key=True)
@@ -24,7 +28,6 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
     
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_id = models.AutoField(primary_key=True)
     date_time = models.DateTimeField(auto_now_add=True)
 

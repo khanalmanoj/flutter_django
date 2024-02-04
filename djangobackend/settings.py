@@ -41,7 +41,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'corsheaders', #new
+    'rest_framework.authtoken',
+    'rest_auth',
+    #registration
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration'
 ]
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -137,3 +145,39 @@ STATIC_FILES_DIRS = (os.path.join(BASE_DIR, 'static'),) #new
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'api.User' #new
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = None
+ACCOUNT_CONFIRM_EMAIL_ON_GET = False
+
+
+REST_AUTH_SERIALIZERS = {
+    "LOGIN_SERIALIZER":"api.serializers.NewLoginSerializer",
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER":"api.serializers.NewRegisterSerializer"
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    ]
+}
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:52310']
+CSRF_COOKIE_SECURE = False
+CORS_ORIGIN_WHITELIST = ['http://localhost:52310']
