@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/FoodViewModel.dart';
-import 'package:flutter_app/new/pages/menupage.dart';
 import 'package:flutter_app/new/pages/orderpage.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_app/new/pages/historypage.dart';
+import 'package:flutter_app/new/pages/menupage.dart';
+
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -21,9 +21,9 @@ class _MainPageState extends State<MainPage> {
       ),
       body: [
         const MenuPage(),
-        const OrderPage(),
-        const Text('History'),
-        const Text('Profile'),
+        const CartScreens(),
+        const CheckOutPage(),
+        const Text("Profile")
       ].elementAt(_currentIndex),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -31,24 +31,25 @@ class _MainPageState extends State<MainPage> {
             _currentIndex = index;
           });
         },
-        destinations: [
-          const NavigationDestination(
+        destinations: const [
+          NavigationDestination(
             icon: Badge(child: Icon(Icons.home)),
             label: 'Menu',
           ),
           NavigationDestination(
             icon: Badge(
-                label: Consumer<FoodViewModel>(builder: (context, data, child) {
-                  return Text(data.countCart.toString());
-                }),
-                child: const Icon(Icons.shopping_cart)),
+                label: Text('2'),
+                // Consumer<FoodViewModel>(builder: (context, data, child) {
+                //   return Text(data.countCart.toString());
+                // }),
+                child: Icon(Icons.shopping_cart)),
             label: 'Orders',
           ),
-          const NavigationDestination(
+          NavigationDestination(
             icon: Icon(Icons.history),
             label: 'History',
           ),
-          const NavigationDestination(
+          NavigationDestination(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),

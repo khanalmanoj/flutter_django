@@ -13,8 +13,8 @@ class FoodAdmin(admin.ModelAdmin):
 
 @admin.register(OrderItem)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['o_id','food','quantity']
+    list_display = ['id','food','quantity']
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_id','date_time']
+    list_display = ['id','user','date_time']

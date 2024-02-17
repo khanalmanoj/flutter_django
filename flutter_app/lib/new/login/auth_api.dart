@@ -13,8 +13,7 @@ Future<dynamic> userAuth(String email, String password) async {
   var url = Uri.parse("$baseUrl/api/auth/login/");
   var res = await http.post(url, body: body);
 
-  print(res.body);
-  print(res.statusCode);
+  print("token:${res.body}");
   if (res.statusCode == 200) {
     Map json = jsonDecode(res.body);
     String token = json['key'];

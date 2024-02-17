@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/new/login/auth_api.dart';
 import 'package:flutter_app/new/login/loginmodel.dart';
-import 'package:flutter_app/new/mainpage.dart';
+import 'package:flutter_app/new/login/user_cubit.dart';
+import 'package:flutter_app/new/pages/mainpage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -126,6 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                               emailController.text, passwordController.text);
                           print(authRes.runtimeType);
                           if (authRes.runtimeType == User) {
+                            User user = authRes;
+                            context.read<UserCubit>().emit(user);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const MainPage()));
                           } else if (authRes.runtimeType == String) {

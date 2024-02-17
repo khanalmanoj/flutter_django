@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/new/login/loginmodel.dart';
+import 'package:flutter_app/new/login/user_cubit.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_app/models/FoodViewModel.dart';
 
@@ -21,6 +23,7 @@ class Menu extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
+    User user = context.read<UserCubit>().state;
     return SafeArea(child:
         Scaffold(body: Consumer<FoodViewModel>(builder: (context, data, child) {
       return data.isLoading
@@ -72,6 +75,7 @@ class Menu extends State<MenuPage> {
                       ),
                       ElevatedButton(
                         onPressed: () {
+                          data.addToCart(data.foodLists[index].id!);
                           data.cartLists.contains(data.foodLists[index])
                               ? foodViewModel
                                   .incrementQuantity(data.foodLists[index])
@@ -79,6 +83,10 @@ class Menu extends State<MenuPage> {
                         },
                         child: const Text("Add to Orders"),
                       ),
+                      Text(
+                        '${user.email}',
+                        style: const TextStyle(fontSize: 18),
+                      )
                     ],
                   ),
                 );

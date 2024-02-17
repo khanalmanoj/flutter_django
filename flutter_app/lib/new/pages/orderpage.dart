@@ -1,147 +1,153 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_app/models/FoodModel.dart';
 import 'package:flutter_app/models/FoodViewModel.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter_app/models/cart.dart';
+import 'package:flutter_app/state/cart_state.dart';
+import 'package:provider/provider.dart';
 
-class OrderPage extends StatefulWidget {
-  const OrderPage({Key? key}) : super(key: key);
+class CartScreens extends StatefulWidget {
+  static const routeName = '/cart-screens';
+
+  const CartScreens({Key? key}) : super(key: key);
 
   @override
-  _OrderPageState createState() => _OrderPageState();
+  State<CartScreens> createState() => _CartScreensState();
 }
 
-class _OrderPageState extends State<OrderPage> {
-  var foodViewModel;
-
+class _CartScreensState extends State<CartScreens> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    foodViewModel = Provider.of<FoodViewModel>(context, listen: false);
+    Provider.of<CartState>(context, listen: false).getOrderDatas();
+    Provider.of<FoodViewModel>(context, listen: false).getAllProducts();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            appBar: AppBar(
-                title: Consumer<FoodViewModel>(builder: (context, data, child) {
-              return Row(
-                children: <Widget>[
-                  Expanded(
-                      child: Text("My Orders (${data.countCart.toString()})")),
-                  Text("Total Price: ${data.totalPrice}"),
-                ],
-              );
-            })),
-            floatingActionButton:
-                Consumer<FoodViewModel>(builder: ((context, data, child) {
-              return FloatingActionButton(
-                  onPressed: () {
-                    data.createOrderItem();
-                    data.createOrder();
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Center(child: Text('Your QR Code')),
-                          content: SizedBox(
-                            height: 400,
-                            width: 400,
-                            child: QrImageView(
-                              data: data.cartListtoJson(),
-                              version: QrVersions.auto,
-                              size: 200.0,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Close'),
-                            ),
-                          ],
-                        );
-                      },
+    final List<OrderModel> orderModels =
+        Provider.of<CartState>(context).orderModels;
+    final List<FoodModel> foodModels =
+        Provider.of<FoodViewModel>(context).foodLists;
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: ListView.builder(
+          itemCount: orderModels.length,
+          itemBuilder: (ctx, index) {
+            final OrderModel orderModel = orderModels[index];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text("Date: ${orderModel.dateTime}"),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: orderModel.order_items!.length,
+                  itemBuilder: (ctx, i) {
+                    var item = orderModel.order_items![i];
+                    FoodModel? foodModel = foodModels.firstWhere(
+                      (food) => food.id == item.foodId,
                     );
-                  },
-                  child: const Icon(Icons.qr_code));
-            })),
-            body: Container(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Consumer<FoodViewModel>(
-                        builder: (context, data, child) {
-                      return ListView.builder(
-                          itemCount: foodViewModel.cartLists.length,
-                          itemBuilder: (count, index) {
-                            return Container(
-                              margin: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: <Widget>[
+                    return Card(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Container(
-                                    height: 50,
-                                    width: 50,
+                                    height: 100,
+                                    width: 100,
                                     margin: const EdgeInsets.all(8.0),
                                     decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
+                                        borderRadius: BorderRadius.circular(20),
                                         image: DecorationImage(
-                                            image: NetworkImage(
-                                                data.cartLists[index].image!),
+                                            image:
+                                                NetworkImage(foodModel.image!),
                                             fit: BoxFit.cover)),
                                   ),
-                                  Expanded(
-                                      child: Text(
-                                          "${data.cartLists[index].title!}/${data.cartLists[index].price}")),
-                                  Container(
-                                    margin: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        // Quantity display and buttons
-                                        Text(
-                                            "Quantity: ${data.cartLists[index].quantity}"),
-                                        IconButton(
-                                          icon: const Icon(Icons.add),
-                                          onPressed: () {
-                                            foodViewModel.incrementQuantity(
-                                                data.cartLists[index]);
-                                          },
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.remove),
-                                          onPressed: () {
-                                            foodViewModel.decrementQuantity(
-                                                data.cartLists[index]);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      foodViewModel
-                                          .removeCart(data.cartLists[index]);
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: const Icon(
-                                        Icons.close,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  )
                                 ],
                               ),
-                            );
-                          });
-                    }),
-                  )
-                ],
-              ),
-            )));
+                              Column(
+                                children: [
+                                  Text(
+                                    foodModel.title.toString(),
+                                    style: const TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "Rs. ${foodModel.price}",
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text("Quantity: ${item.quantity}"),
+                                ],
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                              onPressed: () async {
+                                Provider.of<CartState>(context, listen: false)
+                                    .deleteOrderitem(item.id!);
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                size: 36,
+                                color: Colors.green,
+                              ))
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                Text(
+                  "Total: Rs.${orderModel.total}",
+                  style: const TextStyle(
+                      fontSize: 26, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            onPressed: orderModel.order_items!.isEmpty
+                                ? null
+                                : () {
+                                    // Provider.of<CartState>(context, listen: false)
+                                    // .deleteOrder(orderModel.id!);
+                                  },
+                            child: const Text("Order"),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: orderModel.order_items!.isEmpty
+                              ? null
+                              : () {
+                                  Provider.of<CartState>(context,
+                                          listen: false)
+                                      .deleteOrder(orderModel.id!);
+                                },
+                          child: const Text("Cancel Order"),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 }
