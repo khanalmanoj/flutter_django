@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'djangobackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fooddb',
+        'NAME': 'canteendb',
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': '127.0.0.1',  # Set to the MySQL server host
@@ -157,8 +157,8 @@ AUTHENTICATION_BACKENDS = (
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-USERNAME_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
+USERNAME_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = None
 ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 

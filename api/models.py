@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    id = models.AutoField(primary_key=True)
+    pass
 
 class Food(models.Model):
     food_name = models.CharField(max_length=50)
@@ -22,14 +22,10 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
 
 class History(models.Model):
-    orders = models.ForeignKey(Order, on_delete=models.CASCADE)
-    total_amount = models.IntegerField()
-    food_items = models.ManyToManyField(OrderItem)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order_items = models.ManyToManyField(OrderItem)
     date = models.DateTimeField(auto_now_add=True)
 
-class Bill(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    total = models.IntegerField(default=0)
 
 
 

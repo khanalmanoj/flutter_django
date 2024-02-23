@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/state/cart_state.dart';
+import 'package:flutter_app/canteenapp/orders_state.dart';
 import 'package:provider/provider.dart';
 
 class CheckOutPage extends StatefulWidget {
@@ -13,31 +13,28 @@ class _CheckOutPageState extends State<CheckOutPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch checkouts when the page is initialized
-    Provider.of<CartState>(context, listen: false).fetchCheckouts();
+    // Fetch orders when the page is initialized
+    Provider.of<OrderState>(context, listen: false).fetchAllOrders();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cartState = Provider.of<CartState>(context);
+    final orderState = Provider.of<OrderState>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Cart'),
-      ),
-      body: cartState.checkouts.isEmpty
-          ? Center(
-              child: Text('No items in cart'),
+      body: orderState.orders.isEmpty
+          ? const Center(
+              child: Text('No orders yet!'),
             )
           : ListView.builder(
-              itemCount: cartState.checkouts.length,
+              itemCount: orderState.orders.length,
               itemBuilder: (context, index) {
-                final checkout = cartState.checkouts[index];
+                final order = orderState.orders[index];
                 return ListTile(
-                  leading: Text("UserId: ${checkout.userId}"),
-                  title: Text('Total Amount: ${checkout.totalAmount}'),
+                  leading: Text("UserId: ${order.userId}"),
+                  title: Text('Total Amount: ${order.totalAmount}'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: checkout.foodItemsOrdered
+                    children: order.foodItemsOrdered
                         .map(
                           (item) => Text(
                             '${item.foodName}: ${item.quantity}',

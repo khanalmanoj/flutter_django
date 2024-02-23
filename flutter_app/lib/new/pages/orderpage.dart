@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/FoodModel.dart';
 import 'package:flutter_app/models/FoodViewModel.dart';
 import 'package:flutter_app/models/cart.dart';
+import 'package:flutter_app/new/authentication/loginmodel.dart';
+import 'package:flutter_app/new/authentication/user_cubit.dart';
 import 'package:flutter_app/state/cart_state.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class CartScreens extends StatefulWidget {
   static const routeName = '/cart-screens';
@@ -28,6 +31,7 @@ class _CartScreensState extends State<CartScreens> {
         Provider.of<CartState>(context).orderModels;
     final List<FoodModel> foodModels =
         Provider.of<FoodViewModel>(context).foodLists;
+    User user = context.read<UserCubit>().state;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12),
@@ -123,18 +127,58 @@ class _CartScreensState extends State<CartScreens> {
                             onPressed: orderModel.order_items!.isEmpty
                                 ? null
                                 : () {
-                                    // Provider.of<CartState>(context, listen: false)
-                                    // .deleteOrder(orderModel.id!);
+                                    Provider.of<CartState>(context,
+                                            listen: false)
+                                        .checkoutOrder(orderModel.id!);
                                   },
                             child: const Text("Order"),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            onPressed: orderModel.order_items!.isEmpty
+                                ? null
+                                : () {
+                                    Map<String, dynamic> orderToQR = {
+                                      'orderid': orderModel.id,
+                                      'userid': user.id,
+                                    };
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Center(
+                                              child: Text('Your QR Code')),
+                                          content: SizedBox(
+                                            height: 400,
+                                            width: 400,
+                                            child: QrImageView(
+                                              data: orderToQR.toString(),
+                                              version: QrVersions.auto,
+                                              size: 200.0,
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Close'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                            child: const Text("Create Qr"),
                           ),
                         ),
                         ElevatedButton(
                           onPressed: orderModel.order_items!.isEmpty
                               ? null
                               : () {
-                                  Provider.of<CartState>(context,
-                                          listen: false)
+                                  Provider.of<CartState>(context, listen: false)
                                       .deleteOrder(orderModel.id!);
                                 },
                           child: const Text("Cancel Order"),

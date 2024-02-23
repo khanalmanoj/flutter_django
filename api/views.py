@@ -1,4 +1,4 @@
-from .models import Food
+from .models import Food,User
 from .serializers import FoodSerializer, OrderSerializer
 from rest_framework.generics import ListAPIView
 from .models import Order, OrderItem, History
@@ -135,12 +135,13 @@ class DeleteOrder(APIView):
         return Response(response_msg)
 
 class Checkout(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        cart_id = request.data.get('id')  # Use get method to avoid KeyError
+        cart_id = request.data.get('orderid')
+        user_id = request.data.get('userid') # Use get method to avoid KeyError
         try:
             order = Order.objects.get(id=cart_id)
+            user = User.objects.get(id=user_id) 
             order_items = OrderItem.objects.filter(order=order)
 
             # Calculate total amount and fetch food items
@@ -154,7 +155,7 @@ class Checkout(APIView):
                 food_items_ordered.append({'food_name': food_name, 'quantity': quantity})
 
             # Create a new CheckOut instance with the calculated total_amount and associated food_items
-            checkout = History.objects.create(orders=order, total_amount=total_amount)
+            checkout = History.objects.create(orders=order,user=user,total_amount=total_amount)
             checkout.food_items.add(*order_items)
 
             response_msg = {
@@ -174,6 +175,16 @@ class Checkout(APIView):
 
     
 class HistoryView(ListAPIView):
+    serializer_class = HistorySerializer
+
+    def get_queryset(self):
+        # Get the user from the request
+        user = self.request.user 
+        # Filter the history based on the user
+        queryset = History.objects.filter(order__user=user)        
+        return queryset
+    
+class AllOrdersView(ListAPIView):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
 

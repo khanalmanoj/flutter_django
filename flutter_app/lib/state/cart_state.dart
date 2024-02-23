@@ -86,8 +86,28 @@ class CartState with ChangeNotifier {
     }
   }
 
-   List<History> _checkouts = [];
+    Future<void> checkoutOrder(int id) async {
+    String url = '$baseUrl/api/checkout/';
+    try {
+      http.Response response = await http.post(Uri.parse(url), body: {
+        "id": id.toString(),
+      }, headers: {
+        "Authorization": "token $userToken",
+      });
+      if (response.statusCode == 200) {
+        notifyListeners();
+        print('Orders created sucessfully');
+      } else {
+        // Handle unexpected status code
+        print('Unexpected status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle network errors or other exceptions
+      print('Error checkout: $e');
+    }
+  }
 
+  List<History> _checkouts = [];
   List<History> get checkouts => _checkouts;
 
   String url = '$baseUrl/api/history/';

@@ -1,11 +1,15 @@
 import 'dart:convert';
-import 'package:flutter_app/new/login/loginmodel.dart';
+import 'package:flutter_app/new/authentication/loginmodel.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/models/FoodModel.dart';
 import 'package:flutter_app/new/service.dart';
 
 class FoodViewModel extends ChangeNotifier {
+  final String? userToken;
+
+  FoodViewModel(this.userToken);
+
   User? user;
   var foodLists = <FoodModel>[];
   var cartLists = <FoodModel>[];
@@ -32,7 +36,7 @@ class FoodViewModel extends ChangeNotifier {
         Uri.parse(apiUrl),
         headers: <String, String>{
           "Content-Type": "application/json",
-          'Authorization': "token 6f0ad6a93db1e225a00c50a2c40d24226e30efaa"
+          'Authorization': "token $userToken"
         },
         body: jsonEncode(<String, dynamic>{
           'id': foodId,

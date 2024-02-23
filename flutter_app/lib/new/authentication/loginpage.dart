@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/new/login/auth_api.dart';
-import 'package:flutter_app/new/login/loginmodel.dart';
-import 'package:flutter_app/new/login/user_cubit.dart';
+import 'package:flutter_app/new/authentication/auth_api.dart';
+import 'package:flutter_app/new/authentication/loginmodel.dart';
+import 'package:flutter_app/new/authentication/user_cubit.dart';
 import 'package:flutter_app/new/pages/mainpage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool check = false;
+  bool isvisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,8 @@ class _LoginPageState extends State<LoginPage> {
                   controller: emailController,
                   decoration: const InputDecoration(
                     hintText: 'Enter email',
-                    labelText: 'Username',
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                         borderSide: BorderSide(width: 2, color: Colors.green)),
@@ -66,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 TextFormField(
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: isvisible,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Password cant be empty";
@@ -75,13 +77,26 @@ class _LoginPageState extends State<LoginPage> {
                     }
                     return null;
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Enter Password',
                     labelText: 'Password',
-                    focusedBorder: OutlineInputBorder(
+                    prefixIcon: const Icon(
+                      Icons.person,
+                    ),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isvisible = !isvisible;
+                        });
+                      },
+                      child: Icon(isvisible
+                          ? Icons.remove_red_eye
+                          : Icons.visibility_off),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                         borderSide: BorderSide(width: 2, color: Colors.green)),
-                    enabledBorder: OutlineInputBorder(
+                    enabledBorder: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(12),
                       ),
@@ -106,14 +121,14 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         },
                       ),
-                      const Text('Remember Me'),
-                      const SizedBox(
-                        width: 100,
-                      ),
-                      const Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.green),
-                      ),
+                      // const Text('Remember Me'),
+                      // const SizedBox(
+                      //   width: 100,
+                      // ),
+                      // const Text(
+                      //   'Forgot Password?',
+                      //   style: TextStyle(color: Colors.green),
+                      // ),
                     ],
                   ),
                 ),
@@ -123,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: ElevatedButton(
                         child: const Text("Login"),
                         onPressed: () async {
-                          var authRes = await userAuth(
+                          var authRes = await loginUser(
                               emailController.text, passwordController.text);
                           print(authRes.runtimeType);
                           if (authRes.runtimeType == User) {
@@ -148,14 +163,14 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 });
                           } else {
-                            Fluttertoast.showToast(
-                                msg: "Something went wrong",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
+                            // Fluttertoast.showToast(
+                            //     msg: "Something went wrong",
+                            //     toastLength: Toast.LENGTH_SHORT,
+                            //     gravity: ToastGravity.BOTTOM,
+                            //     timeInSecForIosWeb: 1,
+                            //     backgroundColor: Colors.red,
+                            //     textColor: Colors.white,
+                            //     fontSize: 16.0);
                           }
                         })),
               ]),

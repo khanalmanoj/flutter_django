@@ -1,4 +1,3 @@
-
 // order.dart
 class OrderModel {
   int? id;
@@ -7,7 +6,8 @@ class OrderModel {
   DateTime? dateTime;
   List<OrderItem>? order_items;
 
-  OrderModel({this.id, this.userId, this.total, this.dateTime,this.order_items});
+  OrderModel(
+      {this.id, this.userId, this.total, this.dateTime, this.order_items});
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
@@ -59,7 +59,6 @@ class Order {
   }
 }
 
-
 class Food {
   int? id;
   String? foodName;
@@ -82,14 +81,15 @@ class Food {
   }
 }
 
-
 class History {
   final int id;
+  final int userId;
   final int totalAmount;
   final List<FoodItem> foodItemsOrdered;
   final DateTime date;
 
   History({
+    required this.userId,
     required this.id,
     required this.totalAmount,
     required this.foodItemsOrdered,
@@ -99,11 +99,13 @@ class History {
   factory History.fromJson(Map<String, dynamic> json) {
     return History(
       id: json['id'],
+      userId: json['user'],
       totalAmount: json['total_amount'],
       foodItemsOrdered: (json['food_items_ordered'] as List)
           .map((item) => FoodItem.fromJson(item))
           .toList(),
-      date: DateTime.parse(json['date']), // Assuming 'date' is in ISO 8601 format
+      date:
+          DateTime.parse(json['date']), // Assuming 'date' is in ISO 8601 format
     );
   }
 }

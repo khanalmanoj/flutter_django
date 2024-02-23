@@ -8,12 +8,7 @@ from rest_auth.registration.serializers import RegisterSerializer
 from rest_auth.serializers import LoginSerializer
 
 class NewRegisterSerializer(RegisterSerializer):
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    def custom_signup(self, request, user): 
-        user.first_name = request.data['first_name']
-        user.last_name = request.data['last_name']
-        user.save()
+    pass
 
 class NewLoginSerializer (LoginSerializer):
     pass
@@ -36,11 +31,13 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class HistorySerializer(serializers.ModelSerializer):
     food_items_ordered = serializers.SerializerMethodField()
+    user = serializers.CharField(source='order.user', read_only=True)
+    total_amount = serializers.IntegerField(source='order.total', read_only=True)
 
     class Meta:
         model = History
-        fields = ['id', 'total_amount','date', 'food_items_ordered']
+        fields = ['id','user','total_amount','date', 'food_items_ordered']
 
     def get_food_items_ordered(self, obj):
-        return [{'food_name': item.food.food_name, 'quantity': item.quantity} for item in obj.food_items.all()]
+        return [{'food_name': item.food.food_name, 'quantity': item.quantity} for item in obj.order_items.all()]
    

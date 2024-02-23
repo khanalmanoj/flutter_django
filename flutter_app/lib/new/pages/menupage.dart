@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/new/login/loginmodel.dart';
-import 'package:flutter_app/new/login/user_cubit.dart';
+import 'package:flutter_app/new/authentication/loginmodel.dart';
+import 'package:flutter_app/new/authentication/user_cubit.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_app/models/FoodViewModel.dart';
 

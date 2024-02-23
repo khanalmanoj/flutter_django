@@ -42,7 +42,6 @@ dependencies:
   path_provider:
   provider:
   badges:
-  fluttertoast:
   flutter_bloc: ^8.1.3
   
 
