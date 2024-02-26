@@ -9,7 +9,7 @@ class OrderState extends ChangeNotifier {
   List<Orders> _orders = [];
   List<Orders> get orders => _orders;
 
-  String url = '$baseUrl/api/history/';
+  String url = '$baseUrl/api/allorders/';
 
   Future<void> fetchAllOrders() async {
     final urls = Uri.parse(url);

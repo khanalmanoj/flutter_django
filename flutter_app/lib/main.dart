@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/canteenapp/homepage.dart';
 import 'package:flutter_app/canteenapp/orders_state.dart';
-import 'package:flutter_app/models/FoodViewModel.dart';
-import 'package:flutter_app/new/authentication/loginmodel.dart';
-import 'package:flutter_app/new/authentication/loginpage.dart';
-import 'package:flutter_app/new/authentication/registerpage.dart';
-import 'package:flutter_app/new/authentication/user_cubit.dart';
-import 'package:flutter_app/state/cart_state.dart';
+import 'package:flutter_app/models/menu_view.dart';
+import 'package:flutter_app/user_app/authentication/loginmodel.dart';
+import 'package:flutter_app/user_app/authentication/loginpage.dart';
+import 'package:flutter_app/user_app/authentication/user_cubit.dart';
+import 'package:flutter_app/user_app/state/cart_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +14,7 @@ void main() {
     MultiProvider(
       providers: [
         BlocProvider(create: (context) => UserCubit(User())),
-        ChangeNotifierProvider<OrderState>(
-          create: (context) => OrderState()),
+        ChangeNotifierProvider<OrderState>(create: (context) => OrderState()),
       ],
       child: const MyApp(),
     ),
@@ -34,6 +32,6 @@ class MyApp extends StatelessWidget {
           create: (context) => CartState(userCubit.state.token)),
       ChangeNotifierProvider<FoodViewModel>(
           create: (context) => FoodViewModel(userCubit.state.token)),
-    ], child: const MaterialApp(home: RegisterPage()));
+    ], child: const MaterialApp(home: LoginPage()));
   }
 }

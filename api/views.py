@@ -1,8 +1,8 @@
-from .models import Food,User
-from .serializers import FoodSerializer, OrderSerializer
+from .models import *
+from .serializers import MenuItemSerializer, OrderSerializer
 from rest_framework.generics import ListAPIView
 from .models import Order, OrderItem, History
-from .serializers import OrderItemSerializer,HistorySerializer
+from .serializers import OrderItemSerializer,HistorySerializer,HistoryOrderItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status , viewsets
@@ -11,9 +11,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
-class FoodListView(ListAPIView):
-    queryset = Food.objects.all()
-    serializer_class = FoodSerializer
+class MenuListView(ListAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
 
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
@@ -46,7 +46,7 @@ class AddToOrder(APIView):
 
     def post(self, request):
         food_id = request.data["id"]
-        food_obj = Food.objects.get(id=food_id)
+        food_obj = MenuItem.objects.get(id=food_id)
     
         try:
             user_order = Order.objects.filter(user=request.user).first()
@@ -134,34 +134,71 @@ class DeleteOrder(APIView):
             response_msg = {'error': True}
         return Response(response_msg)
 
-class Checkout(APIView):
+# class Checkout(APIView):
 
+#     def post(self, request):
+#         cart_id = request.data.get('orderid')
+#         user_id = request.data.get('userid') # Use get method to avoid KeyError
+#         try:
+#             orders = Order.objects.get(id=cart_id)
+#             user = User.objects.get(id=user_id) 
+#             order_itemss = OrderItem.objects.filter(order=orders)
+
+#             # Calculate total amount and fetch food items
+#             total_amount = sum(order_item.food.price * order_item.quantity for order_item in order_items)
+
+#             # Construct list of food items with their quantities
+#             food_items_ordered = []
+#             for order_item in order_itemss:
+#                 food_name = order_item.food.food_name
+#                 quantity = order_item.quantity
+#                 food_items_ordered.append({'food_name': food_name, 'quantity': quantity})
+
+#             # Create a new CheckOut instance with the calculated total_amount and associated food_items
+#             checkout = History.objects.create(order=orders,user=user,total_amount=total_amount)
+#             checkout.order_items.add(*order_itemss)
+
+#             response_msg = {
+#                 'error': False,
+#                 'message': 'Checkout completed successfully.',
+#                 'food_items_ordered': food_items_ordered,
+#                 'total_amount': total_amount
+#             }
+#         except Order.DoesNotExist:
+#             response_msg = {'error': True, 'message': 'Order not found.'}
+#         except Exception as e:
+#             print(e)
+#             response_msg = {'error': True, 'message': 'Something went wrong during checkout.'}
+        
+#         return Response(response_msg)
+
+class Checkout(APIView):
     def post(self, request):
         cart_id = request.data.get('orderid')
-        user_id = request.data.get('userid') # Use get method to avoid KeyError
+        user_id = request.data.get('userid')
         try:
             order = Order.objects.get(id=cart_id)
             user = User.objects.get(id=user_id) 
             order_items = OrderItem.objects.filter(order=order)
 
-            # Calculate total amount and fetch food items
+            # Calculate total amount
             total_amount = sum(order_item.food.price * order_item.quantity for order_item in order_items)
 
-            # Construct list of food items with their quantities
-            food_items_ordered = []
-            for order_item in order_items:
-                food_name = order_item.food.food_name
-                quantity = order_item.quantity
-                food_items_ordered.append({'food_name': food_name, 'quantity': quantity})
+            # Create a new History entry
+            history = History.objects.create(order=order, user=user,total_amount=total_amount)
 
-            # Create a new CheckOut instance with the calculated total_amount and associated food_items
-            checkout = History.objects.create(orders=order,user=user,total_amount=total_amount)
-            checkout.food_items.add(*order_items)
+            # Create snapshots of order items
+            for order_item in order_items:
+                HistoryOrderItem.objects.create(
+                    history=history,
+                    food_name=order_item.food.food_name,
+                    quantity=order_item.quantity,
+                    
+                )
 
             response_msg = {
                 'error': False,
                 'message': 'Checkout completed successfully.',
-                'food_items_ordered': food_items_ordered,
                 'total_amount': total_amount
             }
         except Order.DoesNotExist:
@@ -173,20 +210,17 @@ class Checkout(APIView):
         return Response(response_msg)
 
 
+class AllOrdersView(ListAPIView):
+    queryset = History.objects.all().order_by('-date')
+    serializer_class = HistorySerializer
     
 class HistoryView(ListAPIView):
     serializer_class = HistorySerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Get the user from the request
-        user = self.request.user 
-        # Filter the history based on the user
-        queryset = History.objects.filter(order__user=user)        
-        return queryset
-    
-class AllOrdersView(ListAPIView):
-    queryset = History.objects.all()
-    serializer_class = HistorySerializer
+        user = self.request.user
+        return History.objects.filter(user=user).order_by('-date')
 
 class OrderItemCreateView(CreateAPIView):
    serializer_class = OrderItemSerializer

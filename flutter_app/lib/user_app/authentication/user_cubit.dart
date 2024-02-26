@@ -1,4 +1,4 @@
-import 'package:flutter_app/new/authentication/loginmodel.dart';
+import 'package:flutter_app/user_app/authentication/loginmodel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserCubit extends Cubit <User> {

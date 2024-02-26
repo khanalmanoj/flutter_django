@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/new/authentication/auth_api.dart';
-import 'package:flutter_app/new/authentication/loginmodel.dart';
-import 'package:flutter_app/new/authentication/user_cubit.dart';
-import 'package:flutter_app/new/pages/mainpage.dart';
+import 'package:flutter_app/user_app/authentication/auth_api.dart';
+import 'package:flutter_app/user_app/authentication/loginmodel.dart';
+import 'package:flutter_app/user_app/authentication/registerpage.dart';
+import 'package:flutter_app/user_app/authentication/user_cubit.dart';
+import 'package:flutter_app/user_app/pages/mainpage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_app/new/authentication/auth_api.dart';
-// import 'package:flutter_app/new/authentication/loginmodel.dart';
-// import 'package:flutter_app/new/authentication/user_cubit.dart';
-// import 'package:flutter_app/new/pages/mainpage.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController usernameController = TextEditingController();
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController password1Controller = TextEditingController();
-  final TextEditingController password2Controller = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   bool check = false;
   bool isvisible = true;
 
@@ -38,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const Image(image: AssetImage('assets/qrunch.png')),
             const Text(
-              'Register  your account',
+              'Login to your account',
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -48,37 +42,11 @@ class _RegisterPageState extends State<RegisterPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: Column(children: [
                 TextFormField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter username',
-                    labelText: 'Username',
-                    prefixIcon: Icon(Icons.person, color: Colors.green),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        borderSide: BorderSide(width: 2, color: Colors.green)),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      ),
-                      borderSide: BorderSide(width: 2, color: Colors.green),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Username cant be empty";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
                     hintText: 'Enter email',
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email, color: Colors.green),
+                    prefixIcon: Icon(Icons.email,color: Colors.green,),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                         borderSide: BorderSide(width: 2, color: Colors.green)),
@@ -100,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   height: 20,
                 ),
                 TextFormField(
-                  controller: password1Controller,
+                  controller: passwordController,
                   obscureText: isvisible,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -123,11 +91,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           isvisible = !isvisible;
                         });
                       },
-                      child: Icon(
-                          isvisible
-                              ? Icons.remove_red_eye
-                              : Icons.visibility_off,
-                          color: Colors.green),
+                      child: Icon(isvisible
+                          ? Icons.remove_red_eye
+                          : Icons.visibility_off),
                     ),
                     focusedBorder: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -143,62 +109,43 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                TextFormField(
-                  controller: password2Controller,
-                  obscureText: isvisible,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Password cant be empty";
-                    } else if (value.length < 6) {
-                      return "Password cant be empty";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter Password',
-                    labelText: 'Password',
-                    prefixIcon: const Icon(
-                      Icons.password,
-                      color: Colors.green,
-                    ),
-                    suffixIcon: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isvisible = !isvisible;
-                        });
-                      },
-                      child: Icon(
-                        isvisible ? Icons.remove_red_eye : Icons.visibility_off,
-                        color: Colors.green,
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Checkbox(
+                        value: check,
+                        onChanged: (bool? value) {
+                          if (value != null) {
+                            setState(() {
+                              check = value;
+                            });
+                          }
+                        },
                       ),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        borderSide: BorderSide(width: 2, color: Colors.green)),
-                    enabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      ),
-                      borderSide: BorderSide(width: 2, color: Colors.green),
-                    ),
+                      // const Text('Remember Me'),
+                      // const SizedBox(
+                      //   width: 100,
+                      // ),
+                      // const Text(
+                      //   'Forgot Password?',
+                      //   style: TextStyle(color: Colors.green),
+                      // ),
+                    ],
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
                 ),
                 SizedBox(
                     width: 400,
                     height: 60,
                     child: ElevatedButton(
-                        child: const Text("Register"),
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         onPressed: () async {
-                          final String username = usernameController.text;
-                          final String email = emailController.text;
-                          final String password1 = password1Controller.text;
-                          final String password2 = password2Controller.text;
-                          var authRes = await registerUser(
-                              username, email, password1, password2);
-                          print("registercheck:${authRes.runtimeType}");
+                          var authRes = await loginUser(
+                              emailController.text, passwordController.text);
+                          print(authRes.runtimeType);
                           if (authRes.runtimeType == User) {
                             User user = authRes;
                             context.read<UserCubit>().emit(user);
@@ -231,6 +178,25 @@ class _RegisterPageState extends State<RegisterPage> {
                             //     fontSize: 16.0);
                           }
                         })),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Dont have an account?'),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RegisterPage()));
+                        },
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline),
+                        ))
+                  ],
+                )
               ]),
             ),
           ],

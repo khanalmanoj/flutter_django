@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:flutter_app/new/authentication/loginmodel.dart';
+import 'package:flutter_app/user_app/authentication/loginmodel.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_app/models/FoodModel.dart';
-import 'package:flutter_app/new/service.dart';
+import 'package:flutter_app/models/menu.dart';
+import 'package:flutter_app/user_app/service.dart';
 
 class FoodViewModel extends ChangeNotifier {
   final String? userToken;

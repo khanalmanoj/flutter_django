@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/canteenapp/orders_state.dart';
-import 'package:flutter_app/state/cart_state.dart';
+import 'package:flutter_app/canteenapp/orderspage.dart';
+import 'package:flutter_app/user_app/state/cart_state.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -119,7 +120,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               onPressed: () {
                 Provider.of<OrderState>(context, listen: false)
                     .checkoutOrder(orderid, userid);
-                Navigator.pop(context);
+                Navigator.push(context,MaterialPageRoute(builder: (context) => const AllOrdersPage()));
               },
               child: const Text('Confirm Order'),
             ),

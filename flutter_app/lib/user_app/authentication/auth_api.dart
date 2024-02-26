@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_app/new/authentication/loginmodel.dart';
+import 'package:flutter_app/user_app/authentication/loginmodel.dart';
 import 'package:http/http.dart' as http;
 
 const baseUrl = "http://127.0.0.1:8000";
@@ -48,6 +48,14 @@ Future<User?> getUser(String token) async {
   return user;
 }
 
+Future<void> logoutUser(String token) async {
+  var url = Uri.parse("$baseUrl/api/auth/logout/");
+  var res = await http.post(url, headers: {
+    'Authorization': 'Token $token',
+  });
+  print(res.body);
+}
+
 Future<dynamic> registerUser(
   String username,
   String email,
@@ -63,7 +71,7 @@ Future<dynamic> registerUser(
   var url = Uri.parse("$baseUrl/api/auth/registration/");
   var res = await http.post(url, body: data);
   print("registererror:${res.body}");
-if (res.statusCode == 200 || res.statusCode == 201) {
+  if (res.statusCode == 200 || res.statusCode == 201) {
     Map json = jsonDecode(res.body);
     String token = json['key'];
     User? user = await getUser(token);

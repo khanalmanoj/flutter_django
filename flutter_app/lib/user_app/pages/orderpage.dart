@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/FoodModel.dart';
-import 'package:flutter_app/models/FoodViewModel.dart';
-import 'package:flutter_app/models/cart.dart';
-import 'package:flutter_app/new/authentication/loginmodel.dart';
-import 'package:flutter_app/new/authentication/user_cubit.dart';
-import 'package:flutter_app/state/cart_state.dart';
+import 'package:flutter_app/models/menu.dart';
+import 'package:flutter_app/models/menu_view.dart';
+import 'package:flutter_app/models/orders_history.dart';
+import 'package:flutter_app/user_app/authentication/loginmodel.dart';
+import 'package:flutter_app/user_app/authentication/user_cubit.dart';
+import 'package:flutter_app/user_app/state/cart_state.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -127,22 +127,9 @@ class _CartScreensState extends State<CartScreens> {
                             onPressed: orderModel.order_items!.isEmpty
                                 ? null
                                 : () {
-                                    Provider.of<CartState>(context,
-                                            listen: false)
-                                        .checkoutOrder(orderModel.id!);
-                                  },
-                            child: const Text("Order"),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            onPressed: orderModel.order_items!.isEmpty
-                                ? null
-                                : () {
                                     Map<String, dynamic> orderToQR = {
-                                      'orderid': orderModel.id,
-                                      'userid': user.id,
+                                      "orderid": orderModel.id,
+                                      "userid": user.id,
                                     };
                                     showDialog(
                                       context: context,

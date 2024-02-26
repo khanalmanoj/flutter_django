@@ -6,7 +6,7 @@ urlpatterns = [
     #url(r'^rest-auth/', include('rest_auth.urls')),
     path('auth/', include('rest_auth.urls')),
     path('auth/registration/', include('rest_auth.registration.urls')),
-    path('food/', views.FoodListView.as_view()),
+    path('food/', views.MenuListView.as_view()),
     path('orderitem/', views.OrderItemViewSet.as_view({'get': 'list', 'post': 'create'}), name='orderitem-list'),
     path('order/', views.OrderListView.as_view()),
     path('addorder/', views.AddToOrder.as_view()),

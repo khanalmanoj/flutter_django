@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/cart.dart';
+import 'package:flutter_app/models/orders_history.dart';
 import 'package:http/http.dart' as http;
 
 const baseUrl = "http://127.0.0.1:8000";
@@ -118,8 +118,8 @@ class CartState with ChangeNotifier {
     try {
       final response = await http.get(
         urls,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
+        headers: {
+          "Authorization": "token $userToken",
         },
       );
 

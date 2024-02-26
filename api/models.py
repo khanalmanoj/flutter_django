@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    pass
+    id = models.AutoField(primary_key=True)
+    
 
-class Food(models.Model):
+class MenuItem(models.Model):
     food_name = models.CharField(max_length=50)
     desc = models.TextField(max_length=500)
     price = models.IntegerField(default=0)
@@ -18,16 +19,24 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,blank=True)
-    food = models.ForeignKey(Food, on_delete=models.CASCADE,blank=True)
+    food = models.ForeignKey(MenuItem, on_delete=models.CASCADE,blank=True)
     quantity = models.IntegerField(default=1)
+
+# class History(models.Model):
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+#     order_items = models.ManyToManyField(OrderItem)
+#     date = models.DateTimeField(auto_now_add=True)
 
 class History(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    order_items = models.ManyToManyField(OrderItem)
     date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total_amount = models.IntegerField()
 
-
-
+class HistoryOrderItem(models.Model):
+    history = models.ForeignKey(History, on_delete=models.CASCADE)
+    food_name = models.CharField(max_length=50)
+    quantity = models.IntegerField()  
 
     
 
