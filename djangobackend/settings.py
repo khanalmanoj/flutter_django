@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'djangobackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'canteendb',
+        'NAME': 'orderdb',
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': '127.0.0.1',  # Set to the MySQL server host

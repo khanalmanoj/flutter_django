@@ -1,15 +1,22 @@
+from collections import Counter
+import uuid
+from django.conf import settings
+from django.shortcuts import render
+import jwt
 from .models import *
-from .serializers import MenuItemSerializer, OrderSerializer
+from .serializers import *
 from rest_framework.generics import ListAPIView
-from .models import Order, OrderItem, History
-from .serializers import OrderItemSerializer,HistorySerializer,HistoryOrderItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status , viewsets
-from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-# Create your views here.
+from rest_framework.authtoken.models import Token
+
+
+class UserListView(ListAPIView):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
 
 class MenuListView(ListAPIView):
     queryset = MenuItem.objects.all()
@@ -26,7 +33,11 @@ class OrderListView(ListAPIView):
     def get(self, request):
         user = request.user
         try:
-            orders = Order.objects.filter(user=user)
+            if user.is_staff:  # Check if the user is an admin
+                orders = Order.objects.all()  # Retrieve all orders for admin
+            else:
+                orders = Order.objects.filter(user=user)  # Retrieve orders for regular users
+
             data = []
             order_serializer = OrderSerializer(orders, many=True)
             for order in order_serializer.data:
@@ -34,6 +45,7 @@ class OrderListView(ListAPIView):
                 order_item_serializer = OrderItemSerializer(order_items, many=True)              
                 order['order_items'] = order_item_serializer.data           
                 data.append(order)
+
             response_msg = {"error": False, "data": data}
         except Exception as e:
             response_msg = {"error": True, "data": str(e)}        
@@ -97,8 +109,8 @@ class AddToOrder(APIView):
         return Response(response_message)
 
 class DeleteOrderItem(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated, ]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
         order_item_id = request.data.get('id')
@@ -168,24 +180,57 @@ class DeleteOrder(APIView):
 #             response_msg = {'error': True, 'message': 'Order not found.'}
 #         except Exception as e:
 #             print(e)
-#             response_msg = {'error': True, 'message': 'Something went wrong during checkout.'}
-        
+#             response_msg = {'error': True, 'message': 'Something went wrong during checkout.'}       
 #         return Response(response_msg)
+
+# class GenerateOrderToken(APIView):
+#     def post(self, request):
+#         order_id = request.data.get('order_id')
+#         try:
+#             # Retrieve the order object based on the provided order_id
+#             order = Order.objects.get(pk=order_id)
+
+#             # Generate a unique token-like identifier for the order
+#             order.token = str(uuid.uuid4())  # Example: using UUID4 for generating a unique identifier
+#             order.save
+#             # Return the token-like identifier in the response
+#             return Response({'token': order}, status=status.HTTP_200_OK)
+#         except Order.DoesNotExist:
+#             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class GenerateOrderToken(APIView):
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        try:
+            # Generate a JWT containing the order ID
+            token = jwt.encode({'user_id': user_id}, settings.SECRET_KEY, algorithm='HS256')
+            
+            # Return the token to the client
+            return Response({'token': token}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class Checkout(APIView):
     def post(self, request):
-        cart_id = request.data.get('orderid')
-        user_id = request.data.get('userid')
+        token = request.data.get('token')
+        
         try:
-            order = Order.objects.get(id=cart_id)
-            user = User.objects.get(id=user_id) 
+            # Verify user token
+            # user = Token.objects.get(key=token).user
+            decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user = decoded_token.get('user_id')
+
+            # Fetch the order associated with the user
+            order = Order.objects.get(user=user)
             order_items = OrderItem.objects.filter(order=order)
 
             # Calculate total amount
-            total_amount = sum(order_item.food.price * order_item.quantity for order_item in order_items)
+            total_amount = order.total
 
             # Create a new History entry
-            history = History.objects.create(order=order, user=user,total_amount=total_amount)
+            history = History.objects.create(order=order, user=user, total_amount=total_amount)
 
             # Create snapshots of order items
             for order_item in order_items:
@@ -193,7 +238,6 @@ class Checkout(APIView):
                     history=history,
                     food_name=order_item.food.food_name,
                     quantity=order_item.quantity,
-                    
                 )
 
             response_msg = {
@@ -201,12 +245,14 @@ class Checkout(APIView):
                 'message': 'Checkout completed successfully.',
                 'total_amount': total_amount
             }
+        except Token.DoesNotExist:
+            response_msg = {'error': True, 'message': 'Invalid user token.'}
         except Order.DoesNotExist:
             response_msg = {'error': True, 'message': 'Order not found.'}
         except Exception as e:
             print(e)
             response_msg = {'error': True, 'message': 'Something went wrong during checkout.'}
-        
+
         return Response(response_msg)
 
 
@@ -221,23 +267,23 @@ class HistoryView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return History.objects.filter(user=user).order_by('-date')
+    
+def sales_view(request):
+    total_orders = OrderItem.objects.count()
+    total_users = User.objects.count()
+    history_order = HistoryOrderItem.objects.count()
+    total_income = sum(history.total_amount for history in History.objects.all())
 
-class OrderItemCreateView(CreateAPIView):
-   serializer_class = OrderItemSerializer
+    history_order_items = HistoryOrderItem.objects.all()
+    most_ordered_items = Counter(item.food_name for item in history_order_items).most_common(5)
+    
 
-   def post(self, request, *args, **kwargs):
-        serializer = OrderItemSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    context = {
+        'total_orders': history_order,
+        'total_users': total_users,
+        'total_income': total_income,
+        'most_ordered_items': most_ordered_items,
+    }
+    return render(request, 'sales.html', context)
 
-class OrderCreateView(CreateAPIView):
-   serializer_class = OrderSerializer
 
-   def post(self, request, *args, **kwargs):
-        serializer = OrderSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
