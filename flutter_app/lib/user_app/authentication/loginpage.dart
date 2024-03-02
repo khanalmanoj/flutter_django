@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/canteenapp/homepage.dart';
+import 'package:flutter_app/main.dart';
 import 'package:flutter_app/user_app/authentication/auth_api.dart';
 import 'package:flutter_app/user_app/authentication/loginmodel.dart';
 import 'package:flutter_app/user_app/authentication/registerpage.dart';
 import 'package:flutter_app/user_app/authentication/user_cubit.dart';
-import 'package:flutter_app/user_app/pages/mainpage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
@@ -46,7 +47,10 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(
                     hintText: 'Enter email',
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email,color: Colors.green,),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: Colors.green,
+                    ),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                         borderSide: BorderSide(width: 2, color: Colors.green)),
@@ -147,10 +151,15 @@ class _LoginPageState extends State<LoginPage> {
                               emailController.text, passwordController.text);
                           print(authRes.runtimeType);
                           if (authRes.runtimeType == User) {
-                            User user = authRes;
-                            context.read<UserCubit>().emit(user);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const MainPage()));
+                            if (authRes.isStaff == true) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                            } else {
+                              User user = authRes;
+                              context.read<UserCubit>().emit(user);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const MyApp()));
+                            }
                           } else if (authRes.runtimeType == String) {
                             showDialog(
                                 context: context,

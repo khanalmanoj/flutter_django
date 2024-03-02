@@ -7,8 +7,9 @@ class FoodModel {
   double? price;
   String? time;
   String? image;
+  String? category;
 
-  FoodModel({this.id, this.userId, this.quantity, this.title, this.desc, this.price, this.time, this.image});
+  FoodModel({this.id, this.userId, this.quantity, this.title, this.desc, this.price, this.time, this.image, this.category});
 
   factory FoodModel.fromJson(Map<String, dynamic> json) {
     return FoodModel(
@@ -20,6 +21,7 @@ class FoodModel {
       price: json['price'] as double,
       time: json['time'],
       image: json['image'],
+      category: json['category'],
     );
   }
 

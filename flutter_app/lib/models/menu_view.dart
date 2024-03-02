@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_app/user_app/authentication/loginmodel.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -12,7 +13,10 @@ class FoodViewModel extends ChangeNotifier {
 
   User? user;
   var foodLists = <FoodModel>[];
+  var filteredFoodLists = <FoodModel>[];
+  var filteredDrinks = <FoodModel>[];
   var cartLists = <FoodModel>[];
+
   var isLoading = true;
 
   setLoading(bool loading) {
@@ -20,12 +24,41 @@ class FoodViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getAllProducts() async {
+  Future<void> getAllMenu() async {
+    setLoading(true);
     var food = await Service.fetchAllFoods();
     if (food != null) {
       foodLists = food;
       setLoading(false);
     }
+  }
+
+  Future<void> getdrinks() async {
+    setLoading(true);
+    if (foodLists.isEmpty) {
+      await getAllMenu();
+    } else {
+      filteredDrinks =
+          foodLists.where((element) => element.category == 'Drinks').toList();
+      setLoading(false);
+    }
+  }
+
+  Future<void> getfood() async {
+    filteredFoodLists =
+        foodLists.where((element) => element.category == '').toList();
+    notifyListeners();
+  }
+
+  Future<void> filterFoodByCategory(String category) async {
+    if (category.isEmpty) {
+      filteredFoodLists =
+          List.from(foodLists); // If category is empty, show all items
+    } else {
+      filteredFoodLists =
+          foodLists.where((foodItem) => foodItem.category == category).toList();
+    }
+    notifyListeners(); // Notify listeners to update UI
   }
 
   Future<void> addToCart(int foodId) async {

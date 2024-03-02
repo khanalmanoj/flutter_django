@@ -4,12 +4,7 @@ import 'package:flutter_app/user_app/authentication/loginmodel.dart';
 import 'package:flutter_app/user_app/authentication/user_cubit.dart';
 import 'package:flutter_app/user_app/pages/mainpage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_app/new/authentication/auth_api.dart';
-// import 'package:flutter_app/new/authentication/loginmodel.dart';
-// import 'package:flutter_app/new/authentication/user_cubit.dart';
-// import 'package:flutter_app/new/pages/mainpage.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);

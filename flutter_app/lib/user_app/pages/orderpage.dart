@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/menu.dart';
 import 'package:flutter_app/models/menu_view.dart';
@@ -22,7 +24,7 @@ class _CartScreensState extends State<CartScreens> {
   void initState() {
     super.initState();
     Provider.of<CartState>(context, listen: false).getOrderDatas();
-    Provider.of<FoodViewModel>(context, listen: false).getAllProducts();
+    Provider.of<FoodViewModel>(context, listen: false).getAllMenu();
   }
 
   @override
@@ -128,9 +130,9 @@ class _CartScreensState extends State<CartScreens> {
                                 ? null
                                 : () {
                                     Map<String, dynamic> orderToQR = {
-                                      "orderid": orderModel.id,
-                                      "userid": user.id,
+                                      "token": user.token,
                                     };
+                                    String qrcode = jsonEncode(orderToQR);
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -141,7 +143,7 @@ class _CartScreensState extends State<CartScreens> {
                                             height: 400,
                                             width: 400,
                                             child: QrImageView(
-                                              data: orderToQR.toString(),
+                                              data: qrcode,
                                               version: QrVersions.auto,
                                               size: 200.0,
                                             ),

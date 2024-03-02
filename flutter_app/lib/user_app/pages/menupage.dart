@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/menu.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_app/models/menu_view.dart';
 
@@ -16,7 +17,9 @@ class Menu extends State<MenuPage> {
   void initState() {
     super.initState();
     foodViewModel = Provider.of<FoodViewModel>(context, listen: false);
-    foodViewModel.getAllProducts();
+    foodViewModel.getAllMenu();
+    foodViewModel.getdrinks();
+    // foodViewModel.getfood();
   }
 
   @override
@@ -46,9 +49,14 @@ class Menu extends State<MenuPage> {
                         ),
                         const Row(
                           children: [
-                            Chip(label: Text("All")),
-                            Chip(label: Text("Drinks")),
-                            Chip(label: Text("Food")),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Chip(label: Text("All")),
+                                Chip(label: Text("Drinks")),
+                                Chip(label: Text("Food")),
+                              ],
+                            ),
                           ],
                         ),
                         const Padding(
@@ -64,85 +72,10 @@ class Menu extends State<MenuPage> {
                           height: 200,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: data.foodLists.length,
+                            itemCount: data.filteredDrinks.length,
                             itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 180,
-                                // Set width of each card
-                                child: Card(
-                                  margin: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 100,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: NetworkImage(
-                                                data.foodLists[index].image!),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  data.foodLists[index].title!,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: Text(
-                                                  "Rs. ${data.foodLists[index].price!}",
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: IconButton(
-                                              onPressed: () {
-                                                data.addToCart(
-                                                    data.foodLists[index].id!);
-                                                data.cartLists.contains(
-                                                        data.foodLists[index])
-                                                    ? foodViewModel
-                                                        .incrementQuantity(data
-                                                            .foodLists[index])
-                                                    : foodViewModel.addCart(
-                                                        data.foodLists[index]);
-                                              },
-                                              icon: const Icon(
-                                                Icons
-                                                    .add_shopping_cart_outlined,
-                                                color: Colors.green,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
+                              return buildFoodItemCard(
+                                  data.filteredDrinks[index]);
                             },
                           ),
                         ),
@@ -161,83 +94,7 @@ class Menu extends State<MenuPage> {
                             scrollDirection: Axis.horizontal,
                             itemCount: data.foodLists.length,
                             itemBuilder: (context, index) {
-                              return SizedBox(
-                                width: 180,
-                                // Set width of each card
-                                child: Card(
-                                  margin: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 100,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: NetworkImage(
-                                                data.foodLists[index].image!),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  data.foodLists[index].title!,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: Text(
-                                                  "Rs. ${data.foodLists[index].price!}",
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: IconButton(
-                                              onPressed: () {
-                                                data.addToCart(
-                                                    data.foodLists[index].id!);
-                                                data.cartLists.contains(
-                                                        data.foodLists[index])
-                                                    ? foodViewModel
-                                                        .incrementQuantity(data
-                                                            .foodLists[index])
-                                                    : foodViewModel.addCart(
-                                                        data.foodLists[index]);
-                                              },
-                                              icon: const Icon(
-                                                Icons
-                                                    .add_shopping_cart_outlined,
-                                                color: Colors.green,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
+                              return buildFoodItemCard(data.foodLists[index]);
                             },
                           ),
                         ),
@@ -245,6 +102,72 @@ class Menu extends State<MenuPage> {
                     ),
                   );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget buildFoodItemCard(FoodModel foodItem) {
+    return SizedBox(
+      width: 180,
+      child: Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              height: 100,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(foodItem.image!),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        foodItem.title!,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "Rs. ${foodItem.price!}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    onPressed: () {
+                      // Call addToCart method with foodItem.id
+                      Provider.of<FoodViewModel>(context, listen: false)
+                          .addToCart(foodItem.id!);
+                    },
+                    icon: const Icon(
+                      Icons.add_shopping_cart_outlined,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

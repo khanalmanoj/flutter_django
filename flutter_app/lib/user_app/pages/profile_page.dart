@@ -37,24 +37,30 @@ class ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.person, size: 30),
-                      trailing: Text(
-                        'Username: ${user.username}',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                    Row(
+                      children: [
+                        const Icon(Icons.person, size: 30),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Username: ${user.username}',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
-                    ListTile(
-                      leading: const Icon(Icons.email, size: 30),
-                      trailing: Text(
-                        'Email: ${user.email}',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                    Row(
+                      children: [
+                        const Icon(Icons.email, size: 30),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Email: ${user.email}',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      
+                      ],
                     ),
-                    const SizedBox(height: 10),
                   ],
                 ),
               ),

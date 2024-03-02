@@ -3,8 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     id = models.AutoField(primary_key=True)
-    is_staff = models.BooleanField(default=False)
-       
+    is_staff = models.BooleanField(default=False)      
 
 class MenuItem(models.Model):
     CATEGORY_CHOICES = [

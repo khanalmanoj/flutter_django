@@ -42,7 +42,7 @@ class _MainPageState extends State<MainPage> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             actions: [
-              IconButton(
+              TextButton(
                   onPressed: () async {
                     await logoutUser(user.token!);
                     Navigator.pushAndRemoveUntil(
@@ -51,7 +51,9 @@ class _MainPageState extends State<MainPage> {
                             builder: (context) => const LoginPage()),
                         (route) => false);
                   },
-                  icon: const Icon(Icons.logout))
+                  child: const Text(
+                    'Logout', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ))
             ],
           ),
           body: [

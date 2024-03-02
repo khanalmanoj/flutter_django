@@ -17,6 +17,4 @@ urlpatterns = [
     path('history/', views.HistoryView.as_view()),
     path('allorders/', views.AllOrdersView.as_view()),
     path('sales/', views.sales_view, name='sales'),
-    # path('orderitem/create/', OrderItemCreateView.as_view(), name='orderitem-create'),
-    # path('orders/create/', OrderCreateView.as_view(), name='order-create'),
 ]
