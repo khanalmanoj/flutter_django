@@ -14,6 +14,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 
 
+
 class UserListView(ListAPIView):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
@@ -146,85 +147,68 @@ class DeleteOrder(APIView):
             response_msg = {'error': True}
         return Response(response_msg)
 
-# class Checkout(APIView):
-
-#     def post(self, request):
-#         cart_id = request.data.get('orderid')
-#         user_id = request.data.get('userid') # Use get method to avoid KeyError
-#         try:
-#             orders = Order.objects.get(id=cart_id)
-#             user = User.objects.get(id=user_id) 
-#             order_itemss = OrderItem.objects.filter(order=orders)
-
-#             # Calculate total amount and fetch food items
-#             total_amount = sum(order_item.food.price * order_item.quantity for order_item in order_items)
-
-#             # Construct list of food items with their quantities
-#             food_items_ordered = []
-#             for order_item in order_itemss:
-#                 food_name = order_item.food.food_name
-#                 quantity = order_item.quantity
-#                 food_items_ordered.append({'food_name': food_name, 'quantity': quantity})
-
-#             # Create a new CheckOut instance with the calculated total_amount and associated food_items
-#             checkout = History.objects.create(order=orders,user=user,total_amount=total_amount)
-#             checkout.order_items.add(*order_itemss)
-
-#             response_msg = {
-#                 'error': False,
-#                 'message': 'Checkout completed successfully.',
-#                 'food_items_ordered': food_items_ordered,
-#                 'total_amount': total_amount
-#             }
-#         except Order.DoesNotExist:
-#             response_msg = {'error': True, 'message': 'Order not found.'}
-#         except Exception as e:
-#             print(e)
-#             response_msg = {'error': True, 'message': 'Something went wrong during checkout.'}       
-#         return Response(response_msg)
-
-# class GenerateOrderToken(APIView):
-#     def post(self, request):
-#         order_id = request.data.get('order_id')
-#         try:
-#             # Retrieve the order object based on the provided order_id
-#             order = Order.objects.get(pk=order_id)
-
-#             # Generate a unique token-like identifier for the order
-#             order.token = str(uuid.uuid4())  # Example: using UUID4 for generating a unique identifier
-#             order.save
-#             # Return the token-like identifier in the response
-#             return Response({'token': order}, status=status.HTTP_200_OK)
-#         except Order.DoesNotExist:
-#             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
-#         except Exception as e:
-#             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class GenerateOrderToken(APIView):
     def post(self, request):
-        user_id = request.data.get('user_id')
+        order_id = request.data.get('order_id')
         try:
-            # Generate a JWT containing the order ID
-            token = jwt.encode({'user_id': user_id}, settings.SECRET_KEY, algorithm='HS256')
-            
-            # Return the token to the client
-            return Response({'token': token}, status=status.HTTP_200_OK)
+            # Retrieve the order object based on the provided order_id
+            order = Order.objects.get(id=order_id)
+
+            # Generate a unique token-like identifier for the order
+            order.token = str(uuid.uuid4())  # Example: using UUID4 for generating a unique identifier
+            order.save()
+            # Return the token-like identifier in the response
+            return Response({'token': order.token}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class VerifyOrderToken(APIView):
+    def post(self, request):
+        token = request.data.get('token')
+        
+        if not token:
+            return Response({'error': 'Token not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Query the order based on the token
+            order = Order.objects.get(token=token)
+            user = order.user
+            return Response({'order_id': order.id}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found for the provided token'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class CheckOrderItem(APIView):
+    def post(self, request):
+        token = request.data.get('token')
+        try:
+            order = Order.objects.get(token=token)
+            order_items = OrderItem.objects.filter(order=order)
+            
+            order_items_data = [{item.food.food_name:item.quantity} for item in order_items]
+            
+            response_msg = {               
+                'order_items': order_items_data
+            }
+        except Order.DoesNotExist:
+            response_msg = {'error': True, 'message': 'Order not found.'}
+        except Exception as e:
+            response_msg = {'error': True, 'message': e}
+        return Response(response_msg)
 
 class Checkout(APIView):
     def post(self, request):
         token = request.data.get('token')
-        
-        try:
-            # Verify user token
-            # user = Token.objects.get(key=token).user
-            decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            user = decoded_token.get('user_id')
-
+               
+        try:          
             # Fetch the order associated with the user
-            order = Order.objects.get(user=user)
+            order = Order.objects.get(token=token)
             order_items = OrderItem.objects.filter(order=order)
+            user = order.user          
 
             # Calculate total amount
             total_amount = order.total
@@ -245,8 +229,6 @@ class Checkout(APIView):
                 'message': 'Checkout completed successfully.',
                 'total_amount': total_amount
             }
-        except Token.DoesNotExist:
-            response_msg = {'error': True, 'message': 'Invalid user token.'}
         except Order.DoesNotExist:
             response_msg = {'error': True, 'message': 'Order not found.'}
         except Exception as e:

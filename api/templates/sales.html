@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .text-container {
+        display: flex;
+        justify-content: space-between;
+        width: 45%;
+        height: 60px;
+        margin-bottom: 20px;
+      }
+
+      .income-container {
+        display: flex;
+        justify-content: space-between;
+        width: 22.5%;
+        height: 60px;
+        margin-bottom: 20px;
+      }
+      
+      .text {
+        background-color: #f2f2f2;
+        padding: 10px;
+        border-radius: 5px;
+        flex: 1;
+        margin-right: 10px;
+      }
+      
+      .text p {
+        margin: 0;
+      }
+      
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .chart {
+      width: 400px;
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+
+    button {
+      background-color: rgb(143, 182, 237);
+      padding: 5px 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Sales Analysis</h1>
+  </div>
+  <div class="text-container">
+    <div class="text">
+      <p>Orders Made: {{ total_orders }}</p>
+    </div>
+    <div class="text">
+      <p>Total Users: {{ total_users }}</p>
+    </div>
+  </div>
+
+  <div class="income-container">
+    <div class="text">
+      <p>Income: Rs.{{ total_income }}</p>
+    </div>
+  </div>
+  
+  <div class="charts-container">
+    <div class="chart">
+      <h2>Enter Your Expenses & Loss</h2>
+      <div class="form-container">
+        <div class="hii">
+          <label for="amountInput">Expenses:</label>
+          <input type="number" id="amountInput" placeholder="Enter amount">
+        </div>
+        <div class="hii">
+            <label for="lossInput">Loss:</label>
+            <input type="number" id="lossInput" placeholder="Enter amount">
+          </div>
+        <button id="updateButton">Update Charts</button>
+      </div>
+    </div>
+
+    <div class="chart">
+      <h2>Expense and Income</h2>
+      <canvas id="expenseIncomeChart" width="400" height="200"></canvas>
+    </div>
+
+    <div class="chart">
+      <h2>PieChart</h2>
+      <canvas id="expenseByCategoryChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // Sample data
+    let expenseData = [
+      { category: 'Income', amount: {{ total_income }} },
+      { category: 'Loss', amount: 0 } // Initial loss
+    ];
+
+    // Initial chart variables
+    let expenseIncomeChart = null;
+    let expenseByCategoryChart = null;
+
+    // Function to update charts
+    function updateCharts() {
+      updateExpenseIncomeChart();
+      updateExpenseByCategoryChart();
+    }
+
+    // Function to update Expense and Income Chart
+    function updateExpenseIncomeChart() {
+      const ctx = document.getElementById('expenseIncomeChart').getContext('2d');
+
+      if (expenseIncomeChart) {
+        expenseIncomeChart.destroy();
+      }
+
+      let totalIncome = 0;
+      let totalExpenses = 0;
+      let totalLoss = 0;
+
+      expenseData.forEach(entry => {
+        if (entry.amount > 0) {
+          totalIncome += entry.amount;
+        } else {
+          if (entry.category === 'Expenses') {
+            totalExpenses -= entry.amount; // Make negative amounts positive
+          } else if (entry.category === 'Loss') {
+            totalLoss -= entry.amount; // Make negative amounts positive
+          }
+        }
+      });
+
+      const profit = totalIncome - totalExpenses - totalLoss;
+
+      const data = {
+        labels: ['Income', 'Expenses', 'Loss', 'Profit'],
+        datasets: [
+          {
+            label: 'Rs.',
+            backgroundColor: [
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)'
+            ],
+            borderColor: [
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1,
+            data: [totalIncome, totalExpenses, totalLoss, profit]
+          }
+        ]
+      };
+
+      const options = {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      };
+
+      expenseIncomeChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: options
+      });
+    }
+
+    // Function to update Expense by Category Chart
+    function updateExpenseByCategoryChart() {
+      const ctx = document.getElementById('expenseByCategoryChart').getContext('2d');
+
+      if (expenseByCategoryChart) {
+        expenseByCategoryChart.destroy();
+      }
+
+      const categoryExpenses = {};
+
+      expenseData.forEach(entry => {
+        if (!categoryExpenses[entry.category]) {
+          categoryExpenses[entry.category] = 0;
+        }
+        categoryExpenses[entry.category] += entry.amount > 0 ? entry.amount : -entry.amount; // Make negative amounts positive
+      });
+
+      const data = {
+        labels: Object.keys(categoryExpenses),
+        datasets: [{
+          data: Object.values(categoryExpenses),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)'
+          ],
+          borderWidth: 1
+        }]
+      };
+
+      const options = {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      };
+
+      expenseByCategoryChart = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: options
+      });
+    }
+
+    // Initial update of charts
+    updateCharts();
+
+    // Update charts on button click
+    document.getElementById('updateButton').addEventListener('click', function() {
+      const amountInput = parseFloat(document.getElementById('amountInput').value);
+      const lossInput = parseFloat(document.getElementById('lossInput').value);
+
+      expenseData.push({ category: 'Expenses', amount: -amountInput });
+      expenseData.push({ category: 'Loss', amount: -lossInput });
+
+      updateCharts();
+    });
+  </script>
+</body>
+</html>

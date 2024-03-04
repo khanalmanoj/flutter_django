@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/orders_history.dart';
 import 'package:http/http.dart' as http;
-
-const baseUrl = "http://127.0.0.1:8000";
+import '../../baseurl.dart';
 
 
 class CartState with ChangeNotifier {
@@ -86,14 +85,19 @@ class CartState with ChangeNotifier {
     }
   }
 
-    Future<void> checkoutOrder(int id) async {
+
+  Future<void> orderToken() async {
     String url = '$baseUrl/api/checkout/';
     try {
-      http.Response response = await http.post(Uri.parse(url), body: {
-        "id": id.toString(),
-      }, headers: {
-        "Authorization": "token $userToken",
-      });
+      http.Response response = await http.post(
+        Uri.parse(url),
+        body: {
+                 
+        },
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      );
       if (response.statusCode == 200) {
         notifyListeners();
         print('Orders created sucessfully');
@@ -106,6 +110,9 @@ class CartState with ChangeNotifier {
       print('Error checkout: $e');
     }
   }
+
+
+    
 
   List<History> _checkouts = [];
   List<History> get checkouts => _checkouts;

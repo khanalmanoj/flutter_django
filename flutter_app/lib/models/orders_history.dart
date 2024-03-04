@@ -2,17 +2,19 @@
 class OrderModel {
   int? id;
   int? userId;
+  String? token;
   int? total;
   DateTime? dateTime;
   List<OrderItem>? order_items;
 
   OrderModel(
-      {this.id, this.userId, this.total, this.dateTime, this.order_items});
+      {this.id, this.userId,this.token , this.total, this.dateTime, this.order_items});
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       id: json['id'],
       userId: json['user'],
+      token: json['token'],
       total: json['total'],
       dateTime: DateTime.parse(json['date_time']),
       order_items: (json['order_items'] as List)

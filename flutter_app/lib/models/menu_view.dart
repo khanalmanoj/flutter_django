@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/models/menu.dart';
 import 'package:flutter_app/user_app/service.dart';
 
+import '../baseurl.dart';
+
 class FoodViewModel extends ChangeNotifier {
   final String? userToken;
 
@@ -26,7 +28,8 @@ class FoodViewModel extends ChangeNotifier {
 
   Future<void> getAllMenu() async {
     setLoading(true);
-    var food = await Service.fetchAllFoods();
+    var service = Service();
+    var food = await service.fetchAllFoods();
     if (food != null) {
       foodLists = food;
       setLoading(false);
@@ -62,7 +65,7 @@ class FoodViewModel extends ChangeNotifier {
   }
 
   Future<void> addToCart(int foodId) async {
-    const String apiUrl = 'http://127.0.0.1:8000/api/addorder/';
+    String apiUrl = '$baseUrl/api/addorder/';
 
     try {
       final response = await http.post(

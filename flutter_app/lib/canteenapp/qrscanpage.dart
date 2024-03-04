@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/canteenapp/orders_state.dart';
 import 'package:flutter_app/canteenapp/orderspage.dart';
-import 'package:flutter_app/user_app/state/cart_state.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -76,51 +75,46 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     });
   }
 
-  void _handleResult(Barcode scanData) {
+  Future<void> _handleResult(Barcode scanData) async {
     // Access the scanned data (JSON) as a String
-    String? jsonString = scanData.code;
+    String? token = scanData.code;
+    // print('Scanned token: $token');
+
+    OrderState orderstate = Provider.of<OrderState>(context, listen: false);
+    // Map<String, dynamic> tokendatas = await orderstate.verifyOrderToken(token!);
+    Map<String, dynamic> orderdatas = await orderstate.checkOrderItem(token!);
     try {
-      _showListTile(jsonString!);
+      _showListTile(orderdatas, token);
     } catch (e) {
-      print('Invalid QR Code data format: $e');
+      Map<String, dynamic> errordata = {
+        'Invalid QR Code data format': e.toString()
+      };
+      _showListTile(errordata, token);
+      // print('Invalid QR Code data format: $e');
     }
   }
 
-  void _showListTile(String jsonString) {
+  void _showListTile(Map tokendata, String token) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // final cartState = Provider.of<CartState>(context);
-        Map<String, dynamic> data = jsonDecode(jsonString);
-        int orderid = data['orderid'];
-        int userid = data['userid'];
+        // Map<String, dynamic> data = jsonDecode(jsonString);
+
         return AlertDialog(
           title: const Text('Scanned Data'),
           content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Order ID: $orderid'),
-              Text('User ID: $userid'),
+              Text('Order Items: $tokendata'),
             ],
           ),
-          // ListView.builder(
-          //   itemCount: cartState.orderModels[orderid].order_items?.length,
-          //   itemBuilder: (context, index) {
-          //     final order = cartState.orderModels[orderid].order_items![index];
-          //     return const Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           Text('foodname'), // need to make field of foodname in cart model i.e. in orderitem model to get fooodname
-          //           Text(order.quantity!.toString())
-          //         ]);
-          //   },
-          // ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Provider.of<OrderState>(context, listen: false)
-                    .checkoutOrder(orderid, userid);
-                Navigator.push(context,MaterialPageRoute(builder: (context) => const AllOrdersPage()));
+                Provider.of<OrderState>(context, listen: false).checkoutOrder(token);
               },
               child: const Text('Confirm Order'),
             ),

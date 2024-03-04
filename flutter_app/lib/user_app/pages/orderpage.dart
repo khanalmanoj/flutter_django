@@ -1,11 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/menu.dart';
 import 'package:flutter_app/models/menu_view.dart';
 import 'package:flutter_app/models/orders_history.dart';
-import 'package:flutter_app/user_app/authentication/loginmodel.dart';
-import 'package:flutter_app/user_app/authentication/user_cubit.dart';
 import 'package:flutter_app/user_app/state/cart_state.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -33,7 +30,7 @@ class _CartScreensState extends State<CartScreens> {
         Provider.of<CartState>(context).orderModels;
     final List<FoodModel> foodModels =
         Provider.of<FoodViewModel>(context).foodLists;
-    User user = context.read<UserCubit>().state;
+    // User user = context.read<UserCubit>().state;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12),
@@ -129,10 +126,11 @@ class _CartScreensState extends State<CartScreens> {
                             onPressed: orderModel.order_items!.isEmpty
                                 ? null
                                 : () {
-                                    Map<String, dynamic> orderToQR = {
-                                      "token": user.token,
-                                    };
-                                    String qrcode = jsonEncode(orderToQR);
+
+                                    // Map<String, dynamic> orderToQR = {
+                                    //   "token": orderModel.token,
+                                    // };
+                                    // String qrcode = jsonEncode(orderToQR);
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -143,7 +141,7 @@ class _CartScreensState extends State<CartScreens> {
                                             height: 400,
                                             width: 400,
                                             child: QrImageView(
-                                              data: qrcode,
+                                              data: orderModel.token!,
                                               version: QrVersions.auto,
                                               size: 200.0,
                                             ),

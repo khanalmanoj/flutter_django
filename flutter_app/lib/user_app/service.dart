@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter_app/models/menu.dart';
 import 'package:http/http.dart' as http;
+import '../baseurl.dart';
 
 class Service {
   static var client = http.Client();
-
-  static Future<List<FoodModel>?> fetchAllFoods() async {
+  String url = '$baseUrl/api/food/';
+  Future<List<FoodModel>?> fetchAllFoods() async {
     var response =
-        await client.get(Uri.parse("http://127.0.0.1:8000/api/food/"));
+        await client.get(Uri.parse(url));
     if (response.statusCode == 200) {
       var convertedJsonData = jsonDecode(response.body);
       return (convertedJsonData as List)

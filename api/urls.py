@@ -13,6 +13,8 @@ urlpatterns = [
     path('deleteitem/', views.DeleteOrderItem.as_view()),
     path('deleteorder/', views.DeleteOrder.as_view()),
     path('ordertoken/', views.GenerateOrderToken.as_view()),
+    path('verifytoken/', views.VerifyOrderToken.as_view()),
+    path('checkorder/', views.CheckOrderItem.as_view()),
     path('checkout/', views.Checkout.as_view()),
     path('history/', views.HistoryView.as_view()),
     path('allorders/', views.AllOrdersView.as_view()),

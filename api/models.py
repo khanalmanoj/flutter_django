@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
@@ -19,8 +20,18 @@ class MenuItem(models.Model):
     
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, blank=True)
     total = models.IntegerField(default=0)
     date_time = models.DateTimeField(auto_now_add=True)
+
+    def generate_token(self):
+        # Generate a new unique token using UUID every time
+        return uuid.uuid4().hex
+
+    def save(self, *args, **kwargs):
+        # Generate and assign a new token before saving
+        self.token = self.generate_token()
+        super().save(*args, **kwargs)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,blank=True)

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure--h&00r&!&1o*$unoz6@3pg57paii$7%97kendzze616^7fv3l&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','192.168.1.9','192.168.1.2']
+ALLOWED_HOSTS = ['127.0.0.1','192.168.1.9','192.168.1.2','192.168.1.8']
 
 
 # Application definition
@@ -86,16 +86,24 @@ WSGI_APPLICATION = 'djangobackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'orderdb',
+#         'USER': 'admin',
+#         'PASSWORD': 'admin',
+#         'HOST': '127.0.0.1',  # Set to the MySQL server host
+#         'PORT': '3306',       # Set to the MySQL server port
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'orderdb',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': '127.0.0.1',  # Set to the MySQL server host
-        'PORT': '3306',       # Set to the MySQL server port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 
@@ -182,3 +190,5 @@ REST_FRAMEWORK = {
 CSRF_TRUSTED_ORIGINS = ['http://localhost:52310']
 CSRF_COOKIE_SECURE = False
 CORS_ORIGIN_WHITELIST = ['http://localhost:52310']
+
+SECRET_KEY = 'sulav9848132817sulav'
