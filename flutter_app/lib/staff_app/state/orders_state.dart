@@ -83,21 +83,18 @@ Future<Map<String, dynamic>> checkOrderItem(String token) async {
     }
   }
 
-  Future<void> checkoutOrder(String token) async {
+
+ Future<void> checkoutOrder(String token) async {
     String url = '$baseUrl/api/checkout/';
     try {
-      http.Response response = await http.post(
+      final response = await http.post(
         Uri.parse(url),
-        body: {
-          jsonEncode({'token': token}),
-        },
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
+        body: jsonEncode({'token': token}), // JSON encode the data directly
+        headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode == 200) {
         notifyListeners();
-        print('Orders created sucessfully');
+        print('Order created successfully');
       } else {
         // Handle unexpected status code
         print('Unexpected status code: ${response.statusCode}');
@@ -107,4 +104,5 @@ Future<Map<String, dynamic>> checkOrderItem(String token) async {
       print('Error checkout: $e');
     }
   }
+
 }

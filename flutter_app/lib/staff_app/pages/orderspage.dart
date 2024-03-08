@@ -23,7 +23,9 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
     return Scaffold(
       body: orderState.orders.isEmpty
           ? const Center(
-              child: Text('No orders yet!'),
+              child: CircularProgressIndicator(
+                color: Colors.blue,
+              ),
             )
           : SingleChildScrollView(
               child: ListView.builder(

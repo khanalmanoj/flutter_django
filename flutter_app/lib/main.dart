@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/staff_app/pages/homepage.dart';
 import 'package:flutter_app/staff_app/state/orders_state.dart';
 import 'package:flutter_app/customer_app/models/menu_view.dart';
 import 'package:flutter_app/authentication/loginmodel.dart';
@@ -14,6 +13,7 @@ void main() {
   runApp(MultiProvider(
       providers: [
         BlocProvider(create: (context) => UserCubit(User())),
+        ChangeNotifierProvider<OrderState>(create: (context) => OrderState()),
       ],
       child: const MaterialApp(
         home: LoginPage(),
@@ -39,17 +39,17 @@ class CustomerApp extends StatelessWidget {
   }
 }
 
-class StaffApp extends StatelessWidget {
-  const StaffApp({Key? key}) : super(key: key);
+// class StaffApp extends StatelessWidget {
+//   const StaffApp({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<OrderState>(create: (context) => OrderState()),
-          BlocProvider(create: (context) => UserCubit(User())),
-        ],
-        child: const MaterialApp(
-            debugShowCheckedModeBanner: false, home: HomePage()));
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MultiProvider(
+//         providers: [
+//           ChangeNotifierProvider<OrderState>(create: (context) => OrderState()),
+//           BlocProvider(create: (context) => UserCubit(User())),
+//         ],
+//         child: const MaterialApp(
+//             debugShowCheckedModeBanner: false, home: HomePage()));
+//   }
+// }

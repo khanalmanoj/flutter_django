@@ -98,7 +98,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       builder: (BuildContext context) {
         // final cartState = Provider.of<CartState>(context);
         // Map<String, dynamic> data = jsonDecode(jsonString);
-        OrderState orderstate = Provider.of<OrderState>(context, listen: false);
+        // OrderState orderstate = Provider.of<OrderState>(context, listen: false);
 
         return AlertDialog(
           title: const Text('Scanned Data'),
@@ -113,7 +113,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                orderstate.checkoutOrder(token);
+                Provider.of<OrderState>(context, listen: false).checkoutOrder(token);
+                Navigator.pop(context);
               },
               child: const Text('Confirm Order'),
             ),

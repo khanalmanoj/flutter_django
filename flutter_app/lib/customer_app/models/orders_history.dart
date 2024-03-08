@@ -85,7 +85,7 @@ class Food {
 
 class History {
   final int id;
-  final int userId;
+  final String userId;
   final int totalAmount;
   final List<FoodItem> foodItemsOrdered;
   final DateTime date;

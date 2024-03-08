@@ -23,7 +23,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
     return Scaffold(
       body: cartState.checkouts.isEmpty
           ? const Center(
-              child: Text('No items in cart'),
+              child: Text('No items'),
             )
           : SingleChildScrollView(
               child: ListView.builder(

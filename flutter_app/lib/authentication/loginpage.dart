@@ -4,6 +4,7 @@ import 'package:flutter_app/authentication/auth_api.dart';
 import 'package:flutter_app/authentication/loginmodel.dart';
 import 'package:flutter_app/authentication/registerpage.dart';
 import 'package:flutter_app/authentication/user_cubit.dart';
+import 'package:flutter_app/staff_app/pages/homepage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 
@@ -152,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                           if (authRes.runtimeType == User) {
                             if (authRes.isStaff == true) {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const StaffApp()));
+                                  builder: (context) => const HomePage()));
                             } else {
                               User user = authRes;
                               context.read<UserCubit>().emit(user);

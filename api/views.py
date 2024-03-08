@@ -245,12 +245,13 @@ class AllOrdersView(ListAPIView):
     serializer_class = HistorySerializer
     
 class HistoryView(ListAPIView):
+    permission_classes = [IsAuthenticated, ]
+    authentication_classes = [TokenAuthentication, ]
     serializer_class = HistorySerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        return History.objects.filter(user=user).order_by('-date')
+        return History.objects.filter(user=user.username).order_by('-date')
     
 def sales_view(request):
     total_orders = OrderItem.objects.count()
