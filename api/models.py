@@ -41,7 +41,7 @@ class OrderItem(models.Model):
 class History(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.CharField(max_length=50)
     total_amount = models.IntegerField()
 
 class HistoryOrderItem(models.Model):

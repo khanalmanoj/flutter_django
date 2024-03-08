@@ -17,7 +17,7 @@
         justify-content: space-between;
         width: 45%;
         height: 60px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
       }
 
       .income-container {
@@ -55,7 +55,7 @@
     button {
       background-color: rgb(143, 182, 237);
       padding: 5px 10px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -74,7 +74,8 @@
 
   <div class="income-container">
     <div class="text">
-      <p>Income: Rs.{{ total_income }}</p>
+      <p>
+        : Rs.{{ total_revenue }}</p>
     </div>
   </div>
   
@@ -95,7 +96,7 @@
     </div>
 
     <div class="chart">
-      <h2>Expense and Income</h2>
+      <h2>Expenses and Profit in Bargraph</h2>
       <canvas id="expenseIncomeChart" width="400" height="200"></canvas>
     </div>
 
@@ -108,7 +109,7 @@
   <script>
     // Sample data
     let expenseData = [
-      { category: 'Income', amount: {{ total_income }} },
+      { category: 'Revenue', amount: {{ total_revenue }} },
       { category: 'Loss', amount: 0 } // Initial loss
     ];
 
@@ -130,13 +131,13 @@
         expenseIncomeChart.destroy();
       }
 
-      let totalIncome = 0;
+      let totalRevenue = 0;
       let totalExpenses = 0;
       let totalLoss = 0;
 
       expenseData.forEach(entry => {
         if (entry.amount > 0) {
-          totalIncome += entry.amount;
+          totalRevenue += entry.amount;
         } else {
           if (entry.category === 'Expenses') {
             totalExpenses -= entry.amount; // Make negative amounts positive
@@ -146,10 +147,10 @@
         }
       });
 
-      const profit = totalIncome - totalExpenses - totalLoss;
+      const profit = totalRevenue - totalExpenses - totalLoss;
 
       const data = {
-        labels: ['Income', 'Expenses', 'Loss', 'Profit'],
+        labels: ['Revenue', 'Expenses', 'Loss', 'Profit'],
         datasets: [
           {
             label: 'Rs.',
@@ -166,7 +167,7 @@
               'rgba(75, 192, 192, 1)'
             ],
             borderWidth: 1,
-            data: [totalIncome, totalExpenses, totalLoss, profit]
+            data: [totalRevenue, totalExpenses, totalLoss, profit]
           }
         ]
       };

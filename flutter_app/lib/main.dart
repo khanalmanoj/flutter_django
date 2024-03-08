@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/canteenapp/orders_state.dart';
-import 'package:flutter_app/models/menu_view.dart';
-import 'package:flutter_app/user_app/authentication/loginmodel.dart';
-import 'package:flutter_app/user_app/authentication/loginpage.dart';
-import 'package:flutter_app/user_app/authentication/user_cubit.dart';
-import 'package:flutter_app/user_app/pages/mainpage.dart';
-import 'package:flutter_app/user_app/state/cart_state.dart';
+import 'package:flutter_app/staff_app/pages/homepage.dart';
+import 'package:flutter_app/staff_app/state/orders_state.dart';
+import 'package:flutter_app/customer_app/models/menu_view.dart';
+import 'package:flutter_app/authentication/loginmodel.dart';
+import 'package:flutter_app/authentication/loginpage.dart';
+import 'package:flutter_app/authentication/user_cubit.dart';
+import 'package:flutter_app/customer_app/pages/mainpage.dart';
+import 'package:flutter_app/customer_app/state/cart_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,6 @@ void main() {
   runApp(MultiProvider(
       providers: [
         BlocProvider(create: (context) => UserCubit(User())),
-        ChangeNotifierProvider<OrderState>(create: (context) => OrderState()),
       ],
       child: const MaterialApp(
         home: LoginPage(),
@@ -21,8 +21,8 @@ void main() {
       )));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class CustomerApp extends StatelessWidget {
+  const CustomerApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,5 +36,20 @@ class MyApp extends StatelessWidget {
         ],
         child: const MaterialApp(
             debugShowCheckedModeBanner: false, home: MainPage()));
+  }
+}
+
+class StaffApp extends StatelessWidget {
+  const StaffApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<OrderState>(create: (context) => OrderState()),
+          BlocProvider(create: (context) => UserCubit(User())),
+        ],
+        child: const MaterialApp(
+            debugShowCheckedModeBanner: false, home: HomePage()));
   }
 }

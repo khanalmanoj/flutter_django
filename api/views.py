@@ -140,8 +140,10 @@ class DeleteOrder(APIView):
     def post(self, request):
         cart_id = request.data['id']
         try:
-            cart_obj = Order.objects.get(id=cart_id)
-            cart_obj.delete()
+            order = Order.objects.get(id=cart_id)
+            order.total = 0
+            order.save()
+            order.orderitem_set.all().delete()
             response_msg = {'error': False}
         except:
             response_msg = {'error': True}
@@ -208,7 +210,7 @@ class Checkout(APIView):
             # Fetch the order associated with the user
             order = Order.objects.get(token=token)
             order_items = OrderItem.objects.filter(order=order)
-            user = order.user          
+            user = order.user.username         
 
             # Calculate total amount
             total_amount = order.total
@@ -254,7 +256,7 @@ def sales_view(request):
     total_orders = OrderItem.objects.count()
     total_users = User.objects.count()
     history_order = HistoryOrderItem.objects.count()
-    total_income = sum(history.total_amount for history in History.objects.all())
+    total_revenue = sum(history.total_amount for history in History.objects.all())
 
     history_order_items = HistoryOrderItem.objects.all()
     most_ordered_items = Counter(item.food_name for item in history_order_items).most_common(5)
@@ -263,7 +265,7 @@ def sales_view(request):
     context = {
         'total_orders': history_order,
         'total_users': total_users,
-        'total_income': total_income,
+        'total_revenue': total_revenue,
         'most_ordered_items': most_ordered_items,
     }
     return render(request, 'sales.html', context)
