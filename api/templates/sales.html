@@ -241,6 +241,28 @@
       });
     }
 
+    {% comment %} function saveProfit() {
+      fetch('/sales/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: `profit=${profit}`
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              console.log('Profit saved successfully');
+          } else {
+              console.error('Failed to save profit');
+          }
+      })
+      .catch(error => {
+          console.error('Error saving profit:', error);
+      });
+  } {% endcomment %}
+
     // Initial update of charts
     updateCharts();
 
@@ -253,6 +275,7 @@
       expenseData.push({ category: 'Loss', amount: -lossInput });
 
       updateCharts();
+      {% comment %} saveProfit(); {% endcomment %}
     });
   </script>
 </body>

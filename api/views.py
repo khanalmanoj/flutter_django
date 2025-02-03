@@ -12,6 +12,8 @@ from rest_framework import status , viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -34,10 +36,7 @@ class OrderListView(ListAPIView):
     def get(self, request):
         user = request.user
         try:
-            if user.is_staff:  # Check if the user is an admin
-                orders = Order.objects.all()  # Retrieve all orders for admin
-            else:
-                orders = Order.objects.filter(user=user)  # Retrieve orders for regular users
+            orders = Order.objects.filter(user=user)  # Retrieve orders for regular users
 
             data = []
             order_serializer = OrderSerializer(orders, many=True)
@@ -183,6 +182,22 @@ class VerifyOrderToken(APIView):
             return Response({'error': 'Order not found for the provided token'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class UpdateOrderToken(APIView):
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        try:
+            # Retrieve the order object based on the provided order_id
+            order = Order.objects.get(id=order_id)
+
+            # Generate a unique token-like identifier for the order
+            order.token = str(uuid.uuid4())  # Example: using UUID4 for generating a unique identifier
+            order.save()
+            
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class CheckOrderItem(APIView):
     def post(self, request):
@@ -254,21 +269,18 @@ class HistoryView(ListAPIView):
         return History.objects.filter(user=user.username).order_by('-date')
     
 def sales_view(request):
-    total_orders = OrderItem.objects.count()
-    total_users = User.objects.count()
+    total_users = User.objects.filter(is_staff=False).count()
     history_order = HistoryOrderItem.objects.count()
     total_revenue = sum(history.total_amount for history in History.objects.all())
-
     history_order_items = HistoryOrderItem.objects.all()
-    most_ordered_items = Counter(item.food_name for item in history_order_items).most_common(5)
-    
 
+    SalesReport.objects.create(revenue=total_revenue, totalusers=total_users, totalorders=history_order)
+
+    
     context = {
         'total_orders': history_order,
         'total_users': total_users,
         'total_revenue': total_revenue,
-        'most_ordered_items': most_ordered_items,
     }
     return render(request, 'sales.html', context)
-
-
+    

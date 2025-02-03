@@ -49,6 +49,12 @@ class HistoryOrderItem(models.Model):
     food_name = models.CharField(max_length=50)
     quantity = models.IntegerField()  
 
+class SalesReport(models.Model):
+    date = models.DateField(auto_now_add=True)
+    revenue = models.IntegerField()
+    totalusers = models.IntegerField()
+    totalorders = models.IntegerField()
     
+   
 
 
